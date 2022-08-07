@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Workouts</title>
+</head>
+<body>
+
+<!--    {% if workout_list: %}-->
+<!--        <p>-->
+<!--            Which workout did you do?-->
+<!--        </p>-->
+<!--        <ul>-->
+<!--            {% for workout in workout_list: %}-->
+<!--            <li>-->
+<!--                {{ workout }}-->
+<!--                    <a href="{{ url_for('add_to_workout', workout_name=workout) }}">Add</a>-->
+<!--            </li>-->
+<!--            {% endfor %}-->
+<!--        </ul>-->
+<!--    {% else: %}-->
+<!--        <p>-->
+<!--            You don't have any workouts logged!-->
+<!--        </p>-->
+<!--    {% endif %}-->
+    <br>
+    {% if workout_list: %}
+        <form action="{{ url_for('add_to_workout') }}" method="POST">
+            <label for="date">Date</label>
+            <input type="date" id="date" name="workout_date">
+            <br>
+            <br>
+            <select name="Workout_ListBox" size="5" id="workouts_list" required>
+                {% for workout in workout_list: %}
+                    <option value="{{workout}}">{{ workout }}</option>
+                {% endfor %}
+            </select>
+            <br>
+            <br>
+            <input type="submit" name="button" value="Record a Workout">
+            <input type="submit" name="button" value="Edit Routine">
+            <input type="submit" name="button" value="Delete Routine">
+
+        </form>
+            <br>
+            <a href="{{ url_for('new_routine') }}">Add a new workout routine</a>
+    {% else: %}
+        <p>
+            You don't have any workouts logged!
+            <a href="{{ url_for('new_routine') }}">Start here by adding your first workout</a>
+        </p>
+   {% endif %}
+
+</body>
+</html>

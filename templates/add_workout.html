@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New Workout</title>
+</head>
+<body>
+    <h1>Add a Workout Routine!</h1>
+</body>
+</html>
+
+<form action="{{ url_for('new_routine') }}" method="POST">
+
+    <label>Exercise</label>
+    <input name="Exercise_Name" type="text" placeholder="Example: Bench Press">
+    <button type="submit">Add Exercise</button>
+
+    <input hidden="hidden" name="Exercise_List" value = {exercise_list}>
+
+
+</form>
+    {% for exercise in exercise_list: %}
+    <li>
+        {{ exercise }} <a href="{{ url_for('delete_during_creation', exercise_name=exercise) }}">Delete</a>
+    </li>
+    {% endfor %}
+
+
+<form action="{{ url_for('submit_new_routine') }}" method="POST">
+
+    <label>What do you want to call this routine?</label>
+    <input name="routine_name" type="text">
+    <button type="submit">Submit New Routine</button>
+
+    <input hidden="hidden" name="Exercise_List" value = {{exercise_list}}>
+
+
+</form>
+
+
+
+
+<!-- if statement on the add_to_workout function? Maybe an if request.method == POST and it appends the form data from
+this template to the exercise list, otherwise it proceeds as normal (how it's currrently set up)
