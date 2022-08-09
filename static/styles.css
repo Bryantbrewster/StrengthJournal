@@ -1,20 +1,83 @@
 body {
-    background-color: #FFF8DC;
+background: rgb(128,208,199);
+background: linear-gradient(261deg, rgba(128,208,199,1) 0%, rgba(0,147,233,1) 100%);
 }
 
-hr {
-    background-color: #FFF8DC;
-    border-style: dotted none none none;
-    border-width: 5px;
-    border-color: grey;
-    height: 10px;
-    width: 5%;
+
+
+
+/* ID Section */
+
+
+#home_title {
+    padding: 100px 100px 50px 100px;
+    font-size: 5rem;
+
 }
 
-h1 {
-    color: #66BFBF;
+#home_website_description {
+    font-size: 2rem;
+
 }
 
-h3 {
-    color: #66BFBF;
+#home-buttons {
+
+
+}
+
+/* Classes */
+
+.add-custom-workout {
+    padding: 2%;
+}
+
+
+.container-fluid{
+  padding: 7% 15%;
+}
+
+.choose-workout-page-btn{
+    min-width: 100px;
+}
+
+.green-button{
+    background-color: #8FE3CF;
+    color: black;
+}
+
+#features {
+    position: relative;
+}
+
+.feature-box {
+    padding: 4.5%;
+    text-align: center;
+}
+
+.icon {
+  color: #ef8172;
+  margin-bottom: 1rem;
+}
+
+.icon:hover {
+  color: #ff4c68;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.tutorial-link-btn {
+    margin: 4% 5% 0% 0%;
+    min-width: 300px;
+}
+
+.get-started-btn {
+    margin: 4% 0% 0% 5%;
+    min-width: 300px;
+}
+
+
+.routine-select{
+    margin: 200px 0px 0px 0px;
 }
