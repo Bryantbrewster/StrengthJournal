@@ -31,12 +31,15 @@ background: linear-gradient(261deg, rgba(128,208,199,1) 0%, rgba(0,147,233,1) 10
     padding: 2%;
 }
 
+.center-header-title{
+    margin: 125px 0px 0px;
+}
 
 .container-fluid{
   padding: 7% 15%;
 }
 
-.choose-workout-page-btn{
+.small-blk-button{
     min-width: 100px;
 }
 
@@ -63,6 +66,21 @@ background: linear-gradient(261deg, rgba(128,208,199,1) 0%, rgba(0,147,233,1) 10
   color: #ff4c68;
 }
 
+.individual-exercise-name{
+    margin: 4% auto;
+}
+
+.routine-name-header {
+    font-size: 4rem;
+    padding-bottom: 5%;
+}
+
+.record-workout-btn {
+    margin-top: 2%;
+    margin-right: 13%;
+    margin-bottom: 5%;
+}
+
 .text-center {
   text-align: center;
 }
@@ -78,6 +96,3 @@ background: linear-gradient(261deg, rgba(128,208,199,1) 0%, rgba(0,147,233,1) 10
 }
 
 
-.routine-select{
-    margin: 200px 0px 0px 0px;
-}

@@ -54,7 +54,7 @@
 
 
 
-    <div class="row justify-content-center text-center routine-select">
+    <div class="row justify-content-center text-center center-header-title">
         <div class="col-md-6">
             {% if workout_list: %}
             <form action="{{ url_for('add_to_workout') }}" method="POST">
@@ -71,9 +71,9 @@
                 </select>
                 <br>
                 <br>
-                <input type="submit" name="button" value="Record a Workout" class="btn btn-dark btn-sm choose-workout-page-btn">
-                <input type="submit" name="button" value="Edit Routine" class="btn btn-dark btn-sm choose-workout-page-btn">
-                <input type="submit" name="button" value="Delete Routine" class="btn btn-dark btn-sm choose-workout-page-btn">
+                <input type="submit" name="button" value="Record a Workout" class="btn btn-dark btn-sm small-blk-btn">
+                <input type="submit" name="button" value="Edit Routine" class="btn btn-dark btn-sm small-blk-btn">
+                <input type="submit" name="button" value="Delete Routine" class="btn btn-dark btn-sm small-blk-btn">
             </form>
                 <br>
                 <a href="{{ url_for('new_routine') }}" class="btn btn-dark btn-sm choose-workout-page-btn green-button">Add new custom workout routine</a>

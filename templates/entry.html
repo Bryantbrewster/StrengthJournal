@@ -18,28 +18,30 @@
 
   <body>
 
+    <div class="row justify-content-center text-center">
+        <div class="col-md-6">
+            <h1 class="routine-name-header center-header-title">{{ workout_name }}</h1>
+            <form action="{{ url_for('completed_exercises') }}" method="POST">
+            {% for exercise in exercises_in_selected_workout: %}
+                <h3 class="individual-exercise-name">{{ exercise }}</h3>
+                <label>Sets</label>
+                <input name="Sets{{ loop.index }}" type="number">
+                <label>Reps</label>
+                <input name="Reps{{ loop.index }}" type="number">
+                <label>Weight</label>
+                <input name="Weight{{ loop.index }}" type="number" step="0.5">
 
-    <h1>{{ workout_name }}</h1>
-    <form action="{{ url_for('completed_exercises') }}" method="POST">
-    {% for exercise in exercises_in_selected_workout: %}
-        <h3>{{ exercise }}</h3>
-        <label>Sets</label>
-        <input name="Sets{{ loop.index }}" type="number">
-        <label>Reps</label>
-        <input name="Reps{{ loop.index }}" type="number">
-        <label>Weight</label>
-        <input name="Weight{{ loop.index }}" type="number" step="0.5">
-
-        <input hidden="hidden" name="Number_of_Exercises" value ={{number_of_exercises}}>
-        <input hidden="hidden" name="Date{{ loop.index }}" value = "{{ workout_date }}">
-        <input hidden="hidden" name="Exercise{{ loop.index }}" value="{{ exercise }}">
-        <input hidden="hidden" name="Workout{{ loop.index }}" value="{{ workout_name }}">
-    {% endfor %}
-        <br>
-        <br>
-        <button type="submit">Add Exercises</button>
-    </form>
-
+                <input hidden="hidden" name="Number_of_Exercises" value ={{number_of_exercises}}>
+                <input hidden="hidden" name="Date{{ loop.index }}" value = "{{ workout_date }}">
+                <input hidden="hidden" name="Exercise{{ loop.index }}" value="{{ exercise }}">
+                <input hidden="hidden" name="Workout{{ loop.index }}" value="{{ workout_name }}">
+            {% endfor %}
+                <br>
+                <br>
+                <button class="btn btn-dark btn-sm small-blk-btn float-right record-workout-btn font-weight-bold" type="submit">Record this workout</button>
+            </form>
+        </div>
+    </div>
 
 
 </body>
