@@ -25,7 +25,7 @@
 
             <form action="{{ url_for('new_routine') }}" method="POST">
 
-                <label id="new-exercise-name-input">Exercise</label>
+                <label class="new-exercise-name-input">Exercise</label>
                 <input name="Exercise_Name" type="text" placeholder="Example: Bench Press">
                 <button type="submit" class="btn btn-dark btn-sm small-blk-btn">Add Exercise</button>
 
@@ -57,7 +57,7 @@
 
             <form action="{{ url_for('save_routine_edits') }}" method="POST">
 
-                <label id="renaming-routine-input">What do you want to call this routine?</label>
+                <label class="renaming-routine-input">What do you want to call this routine?</label>
                 <input name="new_routine_name" type="text" value="{{routine_name}}" placeholder="Previously: {{routine_name}}" required>
                 <button type="submit" class="btn btn-dark btn-sm small-blk-btn">Save Routine</button>
 
