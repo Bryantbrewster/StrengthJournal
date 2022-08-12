@@ -23,6 +23,7 @@ background: linear-gradient(261deg, rgba(128,208,199,1) 0%, rgba(0,147,233,1) 10
 
 
 
+
 /* Classes */
 
 .add-custom-workout {
@@ -36,6 +37,11 @@ background: linear-gradient(261deg, rgba(128,208,199,1) 0%, rgba(0,147,233,1) 10
 .container-fluid{
   padding: 7% 15%;
 }
+
+.date-box{
+    margin-right:56%;
+}
+
 
 .delete-workout-btn{
     margin-top: 7px

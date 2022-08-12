@@ -36,6 +36,13 @@ db.create_all()
 def home():
     return render_template('index.html')
 
+@app.route('/dashboard')
+def dashboard():
+    full_workout_log = db.session.query(Exercises.workout.distinct()).all()
+    print(full_workout_log)
+    return render_template("dashboard.html")
+
+
 
 @app.route('/choose-a-workout')
 def workout_choice():
@@ -113,7 +120,7 @@ def completed_exercises():
             if request.form[f"Weight{i}"] == '':
                 weight_provided = None
                 new_workout = Exercises(
-                    date=request.form[f"Date{i}"],
+                    date=request.form["workout_date"],
                     workout=request.form[f"Workout{i}"],
                     exercise=request.form[f"Exercise{i}"],
                     sets=request.form[f"Sets{i}"],
@@ -124,7 +131,7 @@ def completed_exercises():
                 db.session.commit()
             else:
                 new_workout = Exercises(
-                    date=request.form[f"Date{i}"],
+                    date=request.form["workout_date"],
                     workout=request.form[f"Workout{i}"],
                     exercise=request.form[f"Exercise{i}"],
                     sets=request.form[f"Sets{i}"],
