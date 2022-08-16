@@ -20,6 +20,32 @@
 
   <body>
 
+<nav class="navbar sticky-top navbar-expand-md navbar-dark bg-dark">
+  <a class="navbar-brand" href="{{ url_for('home') }}">Navbar</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
+    <div class="navbar-nav">
+
+      <a class="nav-item nav-link" href="#">Log In</a>
+      <a class="nav-item nav-link" href="#">Create Account</a>
+      <a class="nav-item nav-link" href="{{ url_for('workout_choice') }}">Record a Workout</a>
+        <a class="nav-item nav-link" href="{{ url_for('workout_choice') }}">My Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+
+
+
+
+
+
+
+
+
+
     <div class="container">
         <div class="row justify-content-center">
             <div class="text-center" id="home_title">

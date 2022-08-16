@@ -36,6 +36,11 @@ db.create_all()
 def home():
     return render_template('index.html')
 
+@app.route('/create-account')
+def create_account():
+    return render_template('create_account.html')
+
+
 @app.route('/dashboard')
 def dashboard():
     full_workout_log = db.session.query(Exercises.workout.distinct()).all()
