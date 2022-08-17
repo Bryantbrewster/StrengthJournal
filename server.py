@@ -1,17 +1,28 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 
-# test to add new stuff
+#don't forget that flask_sqlalchemy and flask_login need to be installed through the terminal commands
 
 
 app = Flask(__name__)
 
+
+app.config['SECRET_KEY'] = 'Zr4u7w!z%C*F-JaNdRgUkXp2s5v8y/A?'
 # create database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///workout_log.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # initializes database
 db = SQLAlchemy(app)
+
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
 # creating the tables
@@ -24,9 +35,18 @@ class Exercises(db.Model):
     reps = db.Column(db.Integer)
     weight = db.Column(db.Float)
 
+
 class Routines(db.Model):
     workout = db.Column(db.String(250), primary_key=True, nullable=False)
     routine_name = db.Column(db.String(250))
+
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100), unique=True)
+    password = db.Column(db.String(100))
+    first_name = db.Column(db.String(1000))
+    last_name = db.Column(db.String(1000))
 
 
 db.create_all()
@@ -36,12 +56,79 @@ db.create_all()
 def home():
     return render_template('index.html')
 
-@app.route('/create-account')
+@app.route('/create-account', methods=["GET", "POST"])
 def create_account():
+    if request.method == "POST":
+
+        #checks to see if there is already an account with this email
+        if User.query.filter_by(email=request.form.get('email')).first():
+            #User already exists
+            flash("There is already an account associated with that email, please use a different email or log in instead!")
+            return redirect(url_for('create_account'))
+
+
+        hashed_salted_password = generate_password_hash(
+            request.form.get('password'),
+            method='pbkdf2:sha256',
+            salt_length=8
+        )
+
+        new_user = User(
+            email=request.form.get('email'),
+            first_name=request.form.get('first_name'),
+            last_name=request.form.get('last_name'),
+            password=hashed_salted_password
+        )
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        #login the new user
+        login_user(new_user)
+
+        return redirect(url_for('home'))
+
     return render_template('create_account.html')
 
 
+@app.route('/login', methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        #remember to NOT include a comma after the next line, otherwise it creates a one element tuple rather than a string
+        entered_email = request.form.get('email')
+        entered_password = request.form.get('password')
+
+        #Looking for the user by their email
+        user = User.query.filter_by(email=entered_email).first()
+
+        #if email not found
+        if not user:
+            flash("The email you entered is not associated with an account, please try again.")
+            return redirect(url_for('login'))
+        #if email was found but password wasn't correct
+        elif not check_password_hash(user.password, entered_password):
+            flash('Incorrect password, please try again.')
+            return redirect(url_for('login'))
+        #email is found + entered password is correct
+        else:
+            login_user(user)
+            return redirect(url_for('workout_choice'))
+
+
+    return render_template('login.html')
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
+
+
+
+
+
 @app.route('/dashboard')
+@login_required
 def dashboard():
     full_workout_log = db.session.query(Exercises.workout.distinct()).all()
     print(full_workout_log)
@@ -50,6 +137,7 @@ def dashboard():
 
 
 @app.route('/choose-a-workout')
+@login_required
 def workout_choice():
     full_workout_log = db.session.query(Exercises.workout.distinct()).all()
     workout_day_names = []
@@ -59,6 +147,7 @@ def workout_choice():
 
 
 @app.route('/enter-your-stats', methods=['GET', 'POST'])
+@login_required
 def add_to_workout():
     if request.form.get("button", False) == "Record a Workout":
         workout_list_box_result = request.form.get('Workout_ListBox')
@@ -116,6 +205,7 @@ def add_to_workout():
 
 
 @app.route("/", methods=['GET', 'POST'])
+@login_required
 def completed_exercises():
     # look into how to either stay on the same page (w/ the other fields STILL filled out), or use 1 submit button to
     # submit all the exercise forms at once. Because right now if someone fills out/submits one, it clears the others
@@ -173,6 +263,7 @@ def completed_exercises():
 #         return render_template('add_workout.html', exercise_list=exercise_list)
 
 @app.route("/new-routine", methods=['GET', 'POST'])
+@login_required
 def new_routine():
     if request.method == "POST":
         new_routine = Routines(
@@ -192,6 +283,7 @@ def new_routine():
 
 
 @app.route("/new_routine", methods=['GET', 'POST'])
+@login_required
 def submit_new_routine():
     new_routine_name = request.form["routine_name"]
     for row in db.session.query(Routines):
@@ -206,6 +298,7 @@ def submit_new_routine():
 
 
 @app.route("/delete")
+@login_required
 def delete_during_creation():
     # right now the delete button works, but it redirects the user to another page
     # change it so that you can delete one, and it will reload the page and keep what the
@@ -242,6 +335,7 @@ def delete_during_creation():
 #     return render_template('add_workout.html', exercise_list=exercise_list)
 
 @app.route("/edit-routine")
+@login_required
 def delete_from_routine():
     exercise_name = request.args.get('exercise_name')
     routine_name = request.args.get('routine_name')
@@ -257,6 +351,7 @@ def delete_from_routine():
 
 
 @app.route("/save", methods=['GET', 'POST'])
+@login_required
 def save_routine_edits():
     # get routine_name
     # get the remaining exercise names and put them in a "keep" list
