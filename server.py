@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import ForeignKey
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 
@@ -26,8 +27,17 @@ def load_user(user_id):
 
 
 # creating the tables
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100), unique=True)
+    password = db.Column(db.String(100))
+    first_name = db.Column(db.String(1000))
+    last_name = db.Column(db.String(1000))
+
+
 class Exercises(db.Model):
-    workout_id = db.Column(db.Integer, primary_key=True)
+    exercise_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     date = db.Column(db.Integer, nullable=False)
     workout = db.Column(db.String(250))
     exercise = db.Column(db.String(250))
@@ -37,16 +47,11 @@ class Exercises(db.Model):
 
 
 class Routines(db.Model):
-    workout = db.Column(db.String(250), primary_key=True, nullable=False)
+    routine_id = db.Column(db.Integer)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    workout = db.Column(db.String(250), nullable=False, primary_key=True)
     routine_name = db.Column(db.String(250))
 
-
-class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(100))
-    first_name = db.Column(db.String(1000))
-    last_name = db.Column(db.String(1000))
 
 
 db.create_all()
@@ -55,6 +60,7 @@ db.create_all()
 @app.route('/')
 def home():
     return render_template('index.html')
+
 
 @app.route('/create-account', methods=["GET", "POST"])
 def create_account():
@@ -112,6 +118,8 @@ def login():
         #email is found + entered password is correct
         else:
             login_user(user)
+            user_routines = db.session.query(Exercises.workout.distinct()).filter(Exercises.user_id == current_user.id).all()
+            print(user_routines)
             return redirect(url_for('workout_choice'))
 
 
@@ -130,8 +138,8 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    full_workout_log = db.session.query(Exercises.workout.distinct()).all()
-    print(full_workout_log)
+    # full_workout_log = db.session.query(Exercises.workout.distinct()).all()
+    # print(full_workout_log)
     return render_template("dashboard.html")
 
 
@@ -139,11 +147,11 @@ def dashboard():
 @app.route('/choose-a-workout')
 @login_required
 def workout_choice():
-    full_workout_log = db.session.query(Exercises.workout.distinct()).all()
-    workout_day_names = []
-    for i in full_workout_log:
-        workout_day_names.append(i[0])
-    return render_template("workout.html", workout_list=workout_day_names)
+    full_user_workout_log = db.session.query(Exercises.workout.distinct()).filter(Exercises.user_id == current_user.id).all()
+    user_routine_names = []
+    for i in full_user_workout_log:
+        user_routine_names.append(i[0])
+    return render_template("workout.html", workout_list=user_routine_names)
 
 
 @app.route('/enter-your-stats', methods=['GET', 'POST'])
@@ -168,11 +176,12 @@ def add_to_workout():
         db.session.query(Routines).delete()
         db.session.commit()
         exercise_list = []
-        exercise_tuples = db.session.query(Exercises.exercise.distinct()).filter(Exercises.workout == workout_list_box_result)
-        for i in exercise_tuples:
+        full_user_workout_log = db.session.query(Exercises.exercise.distinct()).filter(Exercises.user_id == current_user.id, Exercises.workout == workout_list_box_result).all()
+        for i in full_user_workout_log:
             exercise_list.append(i[0])
         for exercise in exercise_list:
             new_routine = Routines(
+                user_id=current_user.id,
                 workout=exercise,
                 routine_name=workout_list_box_result
             )
@@ -215,6 +224,7 @@ def completed_exercises():
             if request.form[f"Weight{i}"] == '':
                 weight_provided = None
                 new_workout = Exercises(
+                    user_id=current_user.id,
                     date=request.form["workout_date"],
                     workout=request.form[f"Workout{i}"],
                     exercise=request.form[f"Exercise{i}"],
@@ -226,6 +236,7 @@ def completed_exercises():
                 db.session.commit()
             else:
                 new_workout = Exercises(
+                    user_id=current_user.id,
                     date=request.form["workout_date"],
                     workout=request.form[f"Workout{i}"],
                     exercise=request.form[f"Exercise{i}"],
@@ -267,6 +278,7 @@ def completed_exercises():
 def new_routine():
     if request.method == "POST":
         new_routine = Routines(
+            user_id=current_user.id,
             workout=request.form["Exercise_Name"]
         )
         db.session.add(new_routine)
@@ -289,6 +301,8 @@ def submit_new_routine():
     for row in db.session.query(Routines):
         row.routine_name = new_routine_name
         new_workout = Exercises(
+            date=0,
+            user_id=current_user.id,
             workout=row.routine_name,
             exercise=row.workout
         )
@@ -338,9 +352,11 @@ def delete_during_creation():
 @login_required
 def delete_from_routine():
     exercise_name = request.args.get('exercise_name')
+    print(exercise_name)
     routine_name = request.args.get('routine_name')
     print(routine_name)
     exercise_to_delete = Routines.query.get(exercise_name)
+    print(exercise_to_delete)
     db.session.delete(exercise_to_delete)
     db.session.commit()
     exercise_list = []
