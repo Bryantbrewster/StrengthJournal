@@ -47,9 +47,9 @@ class Exercises(db.Model):
 
 
 class Routines(db.Model):
-    routine_id = db.Column(db.Integer)
+    routine_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    workout = db.Column(db.String(250), nullable=False, primary_key=True)
+    workout = db.Column(db.String(250), nullable=False)
     routine_name = db.Column(db.String(250))
 
 
@@ -118,8 +118,8 @@ def login():
         #email is found + entered password is correct
         else:
             login_user(user)
-            user_routines = db.session.query(Exercises.workout.distinct()).filter(Exercises.user_id == current_user.id).all()
-            print(user_routines)
+            # user_routines = db.session.query(Exercises.workout.distinct()).filter(Exercises.user_id == current_user.id).all()
+            # print(user_routines)
             return redirect(url_for('workout_choice'))
 
 
@@ -162,7 +162,7 @@ def add_to_workout():
         print(workout_list_box_result)
         workout_date = request.form.get('workout_date')
         exercise_list = []
-        exercise_tuples = db.session.query(Exercises.exercise.distinct()).filter(Exercises.workout == workout_list_box_result).all()
+        exercise_tuples = db.session.query(Exercises.exercise.distinct()).filter(Exercises.user_id == current_user.id, Exercises.workout == workout_list_box_result).all()
         for i in exercise_tuples:
             exercise_list.append(i[0])
         print(exercise_list)
@@ -173,7 +173,8 @@ def add_to_workout():
                                number_of_exercises=number_of_exercises)
     if request.form.get("button", False) == "Edit Routine":
         workout_list_box_result = request.form.get('Workout_ListBox')
-        db.session.query(Routines).delete()
+        db.session.query(Routines).filter(Routines.user_id == current_user.id).delete()
+        # db.session.query(Routines).delete()
         db.session.commit()
         exercise_list = []
         full_user_workout_log = db.session.query(Exercises.exercise.distinct()).filter(Exercises.user_id == current_user.id, Exercises.workout == workout_list_box_result).all()
@@ -193,7 +194,7 @@ def add_to_workout():
     if request.form.get("button", False) == "Delete Routine":
         workout_list_box_result = request.form.get('Workout_ListBox')
         for row in db.session.query(Exercises):
-            if row.workout == workout_list_box_result:
+            if row.workout == workout_list_box_result and row.user_id == current_user.id:
                 db.session.delete(row)
         db.session.commit()
         # full_workout_log = db.session.query(Exercises.workout.distinct()).all()
@@ -284,12 +285,12 @@ def new_routine():
         db.session.add(new_routine)
         db.session.commit()
         exercise_list = []
-        exercise_tuples = db.session.query(Routines.workout.distinct()).all()
+        exercise_tuples = db.session.query(Routines.workout.distinct()).filter(Routines.user_id == current_user.id).all()
         for i in exercise_tuples:
             exercise_list.append(i[0])
         return render_template('add_workout.html', exercise_list=exercise_list)
     else:
-        db.session.query(Routines).delete()
+        db.session.query(Routines).filter(Routines.user_id == current_user.id).delete()
         db.session.commit()
         return render_template('add_workout.html')
 
@@ -298,7 +299,7 @@ def new_routine():
 @login_required
 def submit_new_routine():
     new_routine_name = request.form["routine_name"]
-    for row in db.session.query(Routines):
+    for row in db.session.query(Routines).filter(Routines.user_id == current_user.id):
         row.routine_name = new_routine_name
         new_workout = Exercises(
             date=0,
@@ -321,11 +322,14 @@ def delete_during_creation():
     # "start" with those names already in there
     exercise_name = request.args.get('exercise_name')
     print(exercise_name)
-    exercise_to_delete = Routines.query.get(exercise_name)
-    db.session.delete(exercise_to_delete)
+    # exercise_to_delete = Routines.query.get(exercise_name)
+    # db.session.delete(exercise_to_delete)
+
+    db.session.query(Routines).filter(Routines.user_id == current_user.id, Routines.workout == exercise_name).delete()
+
     db.session.commit()
     exercise_list = []
-    exercise_tuples = db.session.query(Routines.workout.distinct()).all()
+    exercise_tuples = db.session.query(Routines.workout.distinct()).filter(Routines.user_id == current_user.id).all()
     for i in exercise_tuples:
         exercise_list.append(i[0])
     return render_template('add_workout.html', exercise_list=exercise_list)
@@ -355,12 +359,15 @@ def delete_from_routine():
     print(exercise_name)
     routine_name = request.args.get('routine_name')
     print(routine_name)
-    exercise_to_delete = Routines.query.get(exercise_name)
-    print(exercise_to_delete)
-    db.session.delete(exercise_to_delete)
+    # exercise_to_delete = Routines.query.get(exercise_name)
+    # print(exercise_to_delete)
+    # db.session.delete(exercise_to_delete)
+
+    db.session.query(Routines).filter(Routines.user_id == current_user.id, Routines.workout == exercise_name).delete()
+
     db.session.commit()
     exercise_list = []
-    exercise_tuples = db.session.query(Routines.workout.distinct()).all()
+    exercise_tuples = db.session.query(Routines.workout.distinct()).filter(Routines.user_id == current_user.id).all()
     for i in exercise_tuples:
         exercise_list.append(i[0])
     return render_template('edit_routine.html', exercise_list=exercise_list, routine_name=routine_name)
@@ -377,14 +384,14 @@ def save_routine_edits():
     new_routine_name = request.form['new_routine_name']
     old_routine_name = request.form['old_routine_name']
     exercise_keep_list = []
-    exercise_tuples = db.session.query(Routines.workout.distinct()).all()
+    exercise_tuples = db.session.query(Routines.workout.distinct()).filter(Routines.user_id == current_user.id).all()
     for i in exercise_tuples:
         exercise_keep_list.append(i[0])
     print(f'new_routine_name is {new_routine_name}')
     print(f'old_routine_name is {old_routine_name}')
     print(exercise_keep_list)
     for row in db.session.query(Exercises):
-        if row.workout == old_routine_name:
+        if row.workout == old_routine_name and row.user_id == current_user.id:
             row.workout = new_routine_name
             if row.exercise not in exercise_keep_list:
                 db.session.delete(row)
