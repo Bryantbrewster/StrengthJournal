@@ -11,17 +11,60 @@
                 <br>
                 <select class="form-control select2 select2-hidden-accessible mx-auto" style="width: 50%;" tabindex="-1" aria-hidden="true"
                         name="Workout_ListBox" id="workouts_list" required>
-                        <option>Select a routine</option>
+                        <optgroup label="Custom Routine">
                     {% for workout in workout_list: %}
                         <option value="{{workout}}">{{ workout }}</option>
                     {% endfor %}
+                        </optgroup>
                 </select>
                 <br>
                 <br>
                 <input type="submit" name="button" value="Record a Workout" class="btn btn-dark btn-sm small-blk-btn">
                 <input type="submit" name="button" value="Edit Routine" class="btn btn-dark btn-sm small-blk-btn">
-                <input type="submit" name="button" value="Delete Routine" class="btn btn-dark btn-sm small-blk-btn">
+                <input type="button" name="button" value="Delete Routine" class="btn btn-dark btn-sm small-blk-btn" data-toggle="modal" data-target="#confirm-submit">
+
+
+<div class="modal" tabindex="-1" id="confirm-submit">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Are you sure you want to delete this routine?</h5>
+<!--        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+      </div>
+<!--      <div class="modal-body">-->
+<!--        <p>Modal body text goes here.</p>-->
+<!--      </div>-->
+      <div class="modal-footer">
+
+<!--        <form action="{{ url_for('print_test') }}" method="POST">-->
+            <input type="submit" value="Close" class="btn btn-dark btn-sm small-blk-btn" data-dismiss="modal">
+            <input type="submit" name="button" value="Delete Routine" class="btn btn-dark btn-sm small-blk-btn">
+<!--        </form>-->
+      </div>
+    </div>
+  </div>
+</div>
             </form>
+<!--<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">-->
+<!--  <div class="modal-dialog" role="document">-->
+<!--    <div class="modal-content">-->
+<!--      <div class="modal-header">-->
+<!--        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>-->
+<!--        <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--          <span aria-hidden="true">&times;</span>-->
+<!--        </button>-->
+<!--      </div>-->
+<!--      <div class="modal-body">-->
+<!--        ...-->
+<!--      </div>-->
+<!--      <div class="modal-footer">-->
+<!--        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
+<!--        <button type="button" class="btn btn-primary">Save changes</button>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+
                 <br>
                 <a href="{{ url_for('new_routine') }}" class="btn btn-dark btn-sm choose-workout-page-btn green-button">Add new custom workout routine</a>
         {% else: %}

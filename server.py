@@ -90,7 +90,7 @@ def create_account():
         db.session.commit()
 
         #login the new user
-        login_user(new_user)
+        login_user(new_user, remember=True)
 
         return redirect(url_for('home'))
 
@@ -117,7 +117,7 @@ def login():
             return redirect(url_for('login'))
         #email is found + entered password is correct
         else:
-            login_user(user)
+            login_user(user, remember=True)
             # user_routines = db.session.query(Exercises.workout.distinct()).filter(Exercises.user_id == current_user.id).all()
             # print(user_routines)
             return redirect(url_for('workout_choice'))
@@ -212,6 +212,11 @@ def add_to_workout():
         return redirect(url_for('workout_choice'))
 
 
+@app.route('/enter-your-stats', methods=['GET', 'POST'])
+@login_required
+def print_test(action):
+    print()
+
 
 
 @app.route("/", methods=['GET', 'POST'])
@@ -299,17 +304,36 @@ def new_routine():
 @login_required
 def submit_new_routine():
     new_routine_name = request.form["routine_name"]
-    for row in db.session.query(Routines).filter(Routines.user_id == current_user.id):
-        row.routine_name = new_routine_name
-        new_workout = Exercises(
-            date=0,
-            user_id=current_user.id,
-            workout=row.routine_name,
-            exercise=row.workout
-        )
-        db.session.add(new_workout)
-    db.session.commit()
-    return redirect(url_for('workout_choice'))
+
+    # Looking for exercises by their user_id
+    user_exercise_present = Routines.query.filter_by(user_id=current_user.id).first()
+    if not user_exercise_present:
+        #if they didn't enter any exercises
+        flash("Please add exercises to your new routine before submitting!")
+        return redirect(url_for('new_routine'))
+
+
+    if Exercises.query.filter_by(workout=new_routine_name).first():
+        print("duplicate name")
+        flash("You already have a routine with that name, try adding a different routine!")
+        exercise_list = []
+        exercise_tuples = db.session.query(Routines.workout.distinct()).filter(Routines.user_id == current_user.id).all()
+        for i in exercise_tuples:
+            exercise_list.append(i[0])
+        return render_template('add_workout.html', exercise_list=exercise_list)
+
+    else:
+        for row in db.session.query(Routines).filter(Routines.user_id == current_user.id):
+            row.routine_name = new_routine_name
+            new_workout = Exercises(
+                date=0,
+                user_id=current_user.id,
+                workout=row.routine_name,
+                exercise=row.workout
+            )
+            db.session.add(new_workout)
+        db.session.commit()
+        return redirect(url_for('workout_choice'))
 
 
 @app.route("/delete")
