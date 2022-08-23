@@ -66,33 +66,39 @@ def home():
 def create_account():
     if request.method == "POST":
 
+        password1 = request.form.get('password1')
+        password2 = request.form.get('password2')
+
         #checks to see if there is already an account with this email
         if User.query.filter_by(email=request.form.get('email')).first():
             #User already exists
             flash("There is already an account associated with that email, please use a different email or log in instead!")
             return redirect(url_for('create_account'))
 
+        if password1 != password2:
+            flash("The entered passwords do not match.")
+            return redirect(url_for('create_account'))
+        else:
+            hashed_salted_password = generate_password_hash(
+                request.form.get('password'),
+                method='pbkdf2:sha256',
+                salt_length=8
+            )
 
-        hashed_salted_password = generate_password_hash(
-            request.form.get('password'),
-            method='pbkdf2:sha256',
-            salt_length=8
-        )
+            new_user = User(
+                email=request.form.get('email'),
+                first_name=request.form.get('first_name'),
+                last_name=request.form.get('last_name'),
+                password=hashed_salted_password
+            )
 
-        new_user = User(
-            email=request.form.get('email'),
-            first_name=request.form.get('first_name'),
-            last_name=request.form.get('last_name'),
-            password=hashed_salted_password
-        )
+            db.session.add(new_user)
+            db.session.commit()
 
-        db.session.add(new_user)
-        db.session.commit()
+            #login the new user
+            login_user(new_user, remember=True)
 
-        #login the new user
-        login_user(new_user, remember=True)
-
-        return redirect(url_for('home'))
+            return redirect(url_for('home'))
 
     return render_template('create_account.html')
 
