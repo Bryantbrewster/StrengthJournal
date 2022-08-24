@@ -4,6 +4,7 @@ from sqlalchemy import ForeignKey
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 
+
 #don't forget that flask_sqlalchemy and flask_login need to be installed through the terminal commands
 
 
