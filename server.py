@@ -1,11 +1,14 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
+from flask_marshmallow import Marshmallow
+from datetime import datetime
 
 
 #don't forget that flask_sqlalchemy and flask_login need to be installed through the terminal commands
+# same with flask-marshmallow and marshmallow-sqlalchemy
 
 
 app = Flask(__name__)
@@ -17,6 +20,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///workout_log.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # initializes database
 db = SQLAlchemy(app)
+ma = Marshmallow(app)
 
 
 login_manager = LoginManager()
@@ -38,8 +42,8 @@ class User(UserMixin, db.Model):
 
 class Exercises(db.Model):
     exercise_id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    date = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer)
+    date = db.Column(db.String(250), nullable=False)
     workout = db.Column(db.String(250))
     exercise = db.Column(db.String(250))
     sets =  db.Column(db.Integer)
@@ -53,7 +57,20 @@ class Routines(db.Model):
     workout = db.Column(db.String(250), nullable=False)
     routine_name = db.Column(db.String(250))
 
+class ExercisesSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Exercises
+        load_instance = True
 
+class UserSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = User
+        load_instance = True
+
+class RoutinesSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Routines
+        load_instance = True
 
 db.create_all()
 
@@ -81,7 +98,7 @@ def create_account():
             return redirect(url_for('create_account'))
         else:
             hashed_salted_password = generate_password_hash(
-                request.form.get('password'),
+                request.form.get('password1'),
                 method='pbkdf2:sha256',
                 salt_length=8
             )
@@ -145,9 +162,10 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    # full_workout_log = db.session.query(Exercises.workout.distinct()).all()
-    # print(full_workout_log)
-    return render_template("dashboard.html")
+    all_records = Exercises.query.filter(Exercises.user_id == current_user.id).all()
+    exercises_schema = ExercisesSchema(many=True)
+    output = exercises_schema.dump(all_records)
+    return jsonify({'exercises': output})
 
 
 
@@ -168,12 +186,16 @@ def add_to_workout():
         workout_list_box_result = request.form.get('Workout_ListBox')
         print(workout_list_box_result)
         workout_date = request.form.get('workout_date')
+        print(type(workout_date))
+        print(workout_date)
         exercise_list = []
         exercise_tuples = db.session.query(Exercises.exercise.distinct()).filter(Exercises.user_id == current_user.id, Exercises.workout == workout_list_box_result).all()
         for i in exercise_tuples:
             exercise_list.append(i[0])
         print(exercise_list)
+
         number_of_exercises = len(exercise_list)
+        # workout_date = int(workout_date)
         # feed the list of exercises into the entry.html, and render them on the new page (form)
         return render_template('entry.html', exercises_in_selected_workout=exercise_list,
                                workout_name=workout_list_box_result, workout_date=workout_date,
@@ -232,6 +254,8 @@ def completed_exercises():
     # look into how to either stay on the same page (w/ the other fields STILL filled out), or use 1 submit button to
     # submit all the exercise forms at once. Because right now if someone fills out/submits one, it clears the others
     if request.method == "POST":
+        print(type(request.form["workout_date"]))
+
         exercises_in_workout_length = int(request.form["Number_of_Exercises"])
         for i in range(1, int(exercises_in_workout_length) + 1):
             if request.form[f"Weight{i}"] == '':
