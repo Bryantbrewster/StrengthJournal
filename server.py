@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from flask_marshmallow import Marshmallow
 from datetime import datetime
+from pprint import pprint
 
 
 #don't forget that flask_sqlalchemy and flask_login need to be installed through the terminal commands
@@ -165,8 +166,8 @@ def dashboard():
     all_records = Exercises.query.filter(Exercises.user_id == current_user.id).all()
     exercises_schema = ExercisesSchema(many=True)
     output = exercises_schema.dump(all_records)
-    # return jsonify({'exercises': output})
-    return render_template('dashboard.html')
+    pprint(output)
+    return render_template('dashboard.html', output=output)
 
 @app.route('/routine-dashboard')
 @login_required
@@ -175,7 +176,7 @@ def routine_dashboard():
     exercises_schema = ExercisesSchema(many=True)
     output = exercises_schema.dump(all_records)
     # return jsonify({'exercises': output})
-    return render_template('routine_dashboard.html')
+    return render_template('routine_dashboard.html', output=output)
 
 @app.route('/choose-a-workout')
 @login_required
