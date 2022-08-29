@@ -165,9 +165,17 @@ def dashboard():
     all_records = Exercises.query.filter(Exercises.user_id == current_user.id).all()
     exercises_schema = ExercisesSchema(many=True)
     output = exercises_schema.dump(all_records)
-    return jsonify({'exercises': output})
+    # return jsonify({'exercises': output})
+    return render_template('dashboard.html')
 
-
+@app.route('/routine-dashboard')
+@login_required
+def routine_dashboard():
+    all_records = Exercises.query.filter(Exercises.user_id == current_user.id).all()
+    exercises_schema = ExercisesSchema(many=True)
+    output = exercises_schema.dump(all_records)
+    # return jsonify({'exercises': output})
+    return render_template('routine_dashboard.html')
 
 @app.route('/choose-a-workout')
 @login_required
