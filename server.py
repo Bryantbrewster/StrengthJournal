@@ -174,7 +174,7 @@ def dashboard():
     total_output = exercises_schema.dump(all_records)
 
 
-    # grabs all of the routine names for the user, and puts them in an iterable list
+    # grabs all of the unique routine names for the user, and puts them in an iterable list
     # this method can be a template for others
     user_workout_log = db.session.query(Exercises.workout.distinct()).filter(Exercises.user_id == current_user.id).all()
     user_routines = [workout for workout, in user_workout_log]
