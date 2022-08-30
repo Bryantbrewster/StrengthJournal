@@ -1,10 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, create_engine, MetaData, Table, Column, Numeric, Integer, VARCHAR, text
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from flask_marshmallow import Marshmallow
 from datetime import datetime
+from pprint import pprint
+from sqlalchemy.engine import result
+
 
 
 #don't forget that flask_sqlalchemy and flask_login need to be installed through the terminal commands
@@ -18,9 +21,12 @@ app.config['SECRET_KEY'] = 'Zr4u7w!z%C*F-JaNdRgUkXp2s5v8y/A?'
 # create database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///workout_log.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+engine = create_engine('sqlite:///workout_log.db')
 # initializes database
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
+meta = MetaData(bind=engine)
+MetaData.reflect(meta)
 
 
 login_manager = LoginManager()
@@ -162,11 +168,20 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    all_records = Exercises.query.filter(Exercises.user_id == current_user.id).all()
+    all_records = Exercises.query.filter(Exercises.user_id == current_user.id, Exercises.date != 0).all()
+
     exercises_schema = ExercisesSchema(many=True)
-    output = exercises_schema.dump(all_records)
-    # return jsonify({'exercises': output})
-    return render_template('dashboard.html')
+    total_output = exercises_schema.dump(all_records)
+
+
+    # grabs all of the routine names for the user, and puts them in an iterable list
+    # this method can be a template for others
+    user_workout_log = db.session.query(Exercises.workout.distinct()).filter(Exercises.user_id == current_user.id).all()
+    user_routines = [workout for workout, in user_workout_log]
+    print(user_routines)
+
+
+    return render_template('dashboard.html', output=total_output, user_routines=user_routines)
 
 @app.route('/routine-dashboard')
 @login_required
@@ -175,7 +190,7 @@ def routine_dashboard():
     exercises_schema = ExercisesSchema(many=True)
     output = exercises_schema.dump(all_records)
     # return jsonify({'exercises': output})
-    return render_template('routine_dashboard.html')
+    return render_template('routine_dashboard.html', output=output)
 
 @app.route('/choose-a-workout')
 @login_required

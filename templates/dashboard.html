@@ -61,9 +61,9 @@
                             Overview
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <li><a class="dropdown-item" href="{{ url_for('routine_dashboard') }}">Routine 1</a></li>
-                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                            {% for routine in user_routines: %}
+                                <li><a class="dropdown-item" href="{{ url_for('routine_dashboard') }}">{{ routine }}</a></li>
+                            {% endfor %}
                         </ul>
                     </div>
                 </div>
