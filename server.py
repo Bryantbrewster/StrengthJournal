@@ -180,7 +180,6 @@ def dashboard():
     user_routines = [workout for workout, in user_workout_log]
     print(user_routines)
 
-
     return render_template('dashboard.html', output=total_output, user_routines=user_routines)
 
 @app.route('/routine-dashboard')
