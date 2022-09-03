@@ -7,6 +7,7 @@ from flask_marshmallow import Marshmallow
 from datetime import datetime
 from pprint import pprint
 from sqlalchemy.engine import result
+import json
 
 
 
@@ -178,18 +179,26 @@ def dashboard():
     # this method can be a template for others
     user_workout_log = db.session.query(Exercises.workout.distinct()).filter(Exercises.user_id == current_user.id).all()
     user_routines = [workout for workout, in user_workout_log]
-    print(user_routines)
+    # print(user_routines)
 
-    return render_template('dashboard.html', output=total_output, user_routines=user_routines)
+    test_data = {
+        'Legs': 6,
+        'Arms': 4}
+
+    return render_template('dashboard.html', output=total_output, user_routines=user_routines, test_data=test_data)
 
 @app.route('/routine-dashboard')
 @login_required
 def routine_dashboard():
-    all_records = Exercises.query.filter(Exercises.user_id == current_user.id).all()
+    # all_records = Exercises.query.filter(Exercises.user_id == current_user.id).all()
+    all_records = Exercises.query.filter(Exercises.user_id == current_user.id, Exercises.date != 0).all()
+    user_workout_log = db.session.query(Exercises.workout.distinct()).filter(Exercises.user_id == current_user.id).all()
+    user_routines = [workout for workout, in user_workout_log]
+
     exercises_schema = ExercisesSchema(many=True)
     output = exercises_schema.dump(all_records)
     # return jsonify({'exercises': output})
-    return render_template('routine_dashboard.html', output=output)
+    return render_template('routine_dashboard.html', output=output, user_routines=user_routines)
 
 @app.route('/choose-a-workout')
 @login_required

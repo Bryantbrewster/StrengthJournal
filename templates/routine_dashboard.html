@@ -44,21 +44,37 @@
 
 
     <div class="main-content" id="panel">
-
         <div class="container-fluid pt-3">
             <div class="row removable">
                 <div class="col-lg-12">
                     <div class="dropdown">
-                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Overview
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <li><a class="dropdown-item" href="{{ url_for('routine_dashboard') }}">Routine 1</a></li>
-                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('dashboard') }}">Overview</a></li>
+                            {% for routine in user_routines: %}
+                                <li><a class="dropdown-item" href="{{ url_for('routine_dashboard') }}">{{ routine }}</a></li>
+                            {% endfor %}
                         </ul>
                     </div>
                 </div>
+            </div>
+
+<!--        <div class="container-fluid pt-3">-->
+<!--            <div class="row removable">-->
+<!--                <div class="col-lg-12">-->
+<!--                    <div class="dropdown">-->
+<!--                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">-->
+<!--                            Overview-->
+<!--                        </button>-->
+<!--                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">-->
+<!--                            <li><a class="dropdown-item" href="{{ url_for('routine_dashboard') }}">Routine 1</a></li>-->
+<!--                            <li><a class="dropdown-item" href="#">Another action</a></li>-->
+<!--                            <li><a class="dropdown-item" href="#">Something else here</a></li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </div>-->
             </div>
             <div class="row removable">
                 <div class="col-lg-6">
