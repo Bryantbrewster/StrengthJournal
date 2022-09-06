@@ -208,7 +208,6 @@ def dashboard():
     list_vers_of_results = [workout for workout, in results]
     pie_chart_dict = dict(Counter(list_vers_of_results))
 
-
     return render_template('dashboard.html', user_routines=user_routines, pie_chart_dict=pie_chart_dict)
 
 @app.route('/routine-dashboard')
