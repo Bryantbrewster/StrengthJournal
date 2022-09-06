@@ -4,7 +4,7 @@
     <div class="row justify-content-center text-center">
         <div class="col-lg-6">
             <h1 class="routine-name-header center-header-title">{{ workout_name }}</h1>
-            <form action="{{ url_for('completed_exercises', added_workout=workout_date) }}" method="POST">
+            <form action="{{ url_for('completed_exercises', routine_name=workout_name) }}" method="POST">
                 <label for="date">Date</label>
                 <input type="date" id="date" name="workout_date" class="date-box" required>
 

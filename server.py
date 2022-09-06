@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import ForeignKey, create_engine, MetaData, Table, Column, Numeric, Integer, VARCHAR, text
+from sqlalchemy import ForeignKey, create_engine, MetaData, Table, Column, Numeric, Integer, VARCHAR, text, func, select, column
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from flask_marshmallow import Marshmallow
@@ -8,6 +8,7 @@ from datetime import datetime
 from pprint import pprint
 from sqlalchemy.engine import result
 import json
+from collections import Counter
 
 
 
@@ -58,11 +59,20 @@ class Exercises(db.Model):
     weight = db.Column(db.Float)
 
 
+
 class Routines(db.Model):
     routine_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     workout = db.Column(db.String(250), nullable=False)
     routine_name = db.Column(db.String(250))
+
+
+class CompletedRoutines(db.Model):
+    routine_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer)
+    date = db.Column(db.String(250), nullable=False)
+    workout = db.Column(db.String(250))
+
 
 class ExercisesSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
@@ -77,6 +87,11 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
 class RoutinesSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Routines
+        load_instance = True
+
+class CompletedRoutinesSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = CompletedRoutines
         load_instance = True
 
 db.create_all()
@@ -169,23 +184,32 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    all_records = Exercises.query.filter(Exercises.user_id == current_user.id, Exercises.date != 0).all()
+    # queries the exercises table and grabs rows that meet the criteria, placing the row objects into an iterable list
+    # which is really just the filtered rows so the specific columns values can be called upon
+    all_records = Exercises.query.filter(Exercises.user_id == current_user.id,
+                                         Exercises.date != 0).all()
 
-    exercises_schema = ExercisesSchema(many=True)
-    total_output = exercises_schema.dump(all_records)
-
+    # exercises_schema = ExercisesSchema(many=True)
+    # total_output = exercises_schema.dump(all_records)
 
     # grabs all of the unique routine names for the user, and puts them in an iterable list
     # this method can be a template for others
-    user_workout_log = db.session.query(Exercises.workout.distinct()).filter(Exercises.user_id == current_user.id).all()
+    user_workout_log = db.session.query(Exercises.workout.distinct()).filter(Exercises.user_id == current_user.id,
+                                                                             Exercises.date != 0).all()
     user_routines = [workout for workout, in user_workout_log]
-    # print(user_routines)
 
-    test_data = {
-        'Legs': 6,
-        'Arms': 4}
+    # creates a query using raw SQL, assigns it to a variable. Executes the variables which returns single element
+    # tuples as the results from the selected column. Does list comprehension to turn them from single element tuples
+    # into a list of strings. Then uses Counter and creates a dictionary where the keys are the unique elements from
+    # the list, and the values are the # of times those unique elements appeared. Which looks like -> {'Leg Day': 4}
+    # remember, Counter can also be used to just grab the unique names or just grab the # of appearances
+    sql = f'SELECT workout FROM COMPLETED_ROUTINES WHERE USER_ID={current_user.id} ORDER BY date DESC LIMIT 10'
+    results = engine.execute(sql).all()
+    list_vers_of_results = [workout for workout, in results]
+    pie_chart_dict = dict(Counter(list_vers_of_results))
 
-    return render_template('dashboard.html', output=total_output, user_routines=user_routines, test_data=test_data)
+
+    return render_template('dashboard.html', user_routines=user_routines, pie_chart_dict=pie_chart_dict)
 
 @app.route('/routine-dashboard')
 @login_required
@@ -195,10 +219,10 @@ def routine_dashboard():
     user_workout_log = db.session.query(Exercises.workout.distinct()).filter(Exercises.user_id == current_user.id).all()
     user_routines = [workout for workout, in user_workout_log]
 
-    exercises_schema = ExercisesSchema(many=True)
-    output = exercises_schema.dump(all_records)
+    # exercises_schema = ExercisesSchema(many=True)
+    # output = exercises_schema.dump(all_records)
     # return jsonify({'exercises': output})
-    return render_template('routine_dashboard.html', output=output, user_routines=user_routines)
+    return render_template('routine_dashboard.html', user_routines=user_routines)
 
 @app.route('/choose-a-workout')
 @login_required
@@ -286,6 +310,8 @@ def completed_exercises():
     # submit all the exercise forms at once. Because right now if someone fills out/submits one, it clears the others
     if request.method == "POST":
         print(type(request.form["workout_date"]))
+        routine_name = request.args.get('routine_name')
+        print(f"{routine_name} is the routine name")
 
         exercises_in_workout_length = int(request.form["Number_of_Exercises"])
         for i in range(1, int(exercises_in_workout_length) + 1):
@@ -301,7 +327,6 @@ def completed_exercises():
                     weight=weight_provided
                 )
                 db.session.add(new_workout)
-                db.session.commit()
             else:
                 new_workout = Exercises(
                     user_id=current_user.id,
@@ -313,8 +338,18 @@ def completed_exercises():
                     weight=request.form[f"Weight{i}"]
                 )
                 db.session.add(new_workout)
-                db.session.commit()
+
+        recorded_routine = CompletedRoutines(
+            user_id=current_user.id,
+            date=request.form["workout_date"],
+            workout=routine_name
+        )
+
+        db.session.add(recorded_routine)
+        db.session.commit()
+
         return redirect(url_for('home'))
+
     else:
         pass
 

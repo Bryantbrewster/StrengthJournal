@@ -408,11 +408,11 @@
     <script src="https://loopple.s3.eu-west-3.amazonaws.com/asteria-dashboard/js/asteria-dashboard.min.js"></script>
 
     <script type="text/javascript">
-            myVar = myFunc({{ test_data | tojson }});
+            myVar = myFunc({{ pie_chart_dict | tojson }});
     </script>
     <script>
-        const jstestdata = {{test_data | tojson }};
-        console.log(jstestdata);
+        const recent_routine_names = {{pie_chart_dict | tojson }};
+
 
 
 
@@ -846,11 +846,11 @@
         new Chart(ctx5, {
           type: 'pie',
           data: {
-            labels: Object.keys(jstestdata),
+            labels: Object.keys(recent_routine_names),
 <!--            labels: ['OK', 'WARNING', 'CRITICAL', 'UNKNOWN'],-->
             datasets: [{
               label: '# of Tomatoes',
-              data: Object.values(jstestdata),
+              data: Object.values(recent_routine_names),
               backgroundColor: [
                 'rgba(32, 201, 151, 0.5)',
                 'rgba(111, 66, 193, 0.5)',
