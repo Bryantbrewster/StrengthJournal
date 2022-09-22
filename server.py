@@ -4,7 +4,7 @@ from sqlalchemy import ForeignKey, create_engine, MetaData, Table, Column, Numer
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from flask_marshmallow import Marshmallow
-from datetime import datetime
+from datetime import datetime, date
 from pprint import pprint
 from sqlalchemy.engine import result
 import json
@@ -33,6 +33,11 @@ MetaData.reflect(meta)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+# get today's date
+today = date.today()
+current_date = today.strftime("%Y-%m-%d")
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -203,12 +208,38 @@ def dashboard():
     # into a list of strings. Then uses Counter and creates a dictionary where the keys are the unique elements from
     # the list, and the values are the # of times those unique elements appeared. Which looks like -> {'Leg Day': 4}
     # remember, Counter can also be used to just grab the unique names or just grab the # of appearances
-    sql = f'SELECT workout FROM COMPLETED_ROUTINES WHERE USER_ID={current_user.id} ORDER BY date DESC LIMIT 10'
-    results = engine.execute(sql).all()
-    list_vers_of_results = [workout for workout, in results]
+    pie_chart_sql = f'SELECT workout FROM COMPLETED_ROUTINES WHERE USER_ID={current_user.id} ORDER BY date DESC LIMIT 10'
+    pie_chart_results = engine.execute(pie_chart_sql).all()
+    list_vers_of_results = [workout for workout, in pie_chart_results]
     pie_chart_dict = dict(Counter(list_vers_of_results))
 
-    return render_template('dashboard.html', user_routines=user_routines, pie_chart_dict=pie_chart_dict)
+
+    # unique number of days worked out in the user's last 30 days
+    day_count_sql = f'''SELECT count(distinct date) FROM COMPLETED_ROUTINES WHERE USER_ID={current_user.id} 
+    AND DATE >= DATETIME('now', '-30 day') AND DATE <= DATETIME('now')'''
+    day_count_results = engine.execute(day_count_sql).all()
+    unique_days_last_30 = day_count_results[0][0]
+
+    # unique number of routines the user did in the last 30 days
+    routine_count_sql = f'''SELECT count(distinct workout) FROM COMPLETED_ROUTINES WHERE USER_ID={current_user.id} 
+    AND DATE >= DATETIME('now', '-30 day') AND DATE <= DATETIME('now')'''
+    routine_count_results = engine.execute(routine_count_sql).all()
+    unique_routines_last_30 = routine_count_results[0][0]
+
+    # the most common routine done in the last 30 days
+    favorite_routine_sql = f'''SELECT workout FROM COMPLETED_ROUTINES 
+    WHERE USER_ID={current_user.id} AND DATE >= DATETIME('now', '-30 day') AND DATE <= DATETIME('now') 
+    GROUP BY workout ORDER BY count(workout) DESC LIMIT 1'''
+    favorite_routine_results = engine.execute(favorite_routine_sql).all()
+    favorite_routine_last_30 = favorite_routine_results[0][0]
+
+    three_card_dict = {'unique_days_last_30': unique_days_last_30,
+                   'unique_routines_last_30': unique_routines_last_30,
+                   'favorite_routine_last_30': favorite_routine_last_30}
+
+    print(three_card_dict)
+    return render_template('dashboard.html', user_routines=user_routines, pie_chart_dict=pie_chart_dict,
+                           three_card_dict=three_card_dict)
 
 @app.route('/routine-dashboard')
 @login_required
@@ -253,7 +284,7 @@ def add_to_workout():
         # feed the list of exercises into the entry.html, and render them on the new page (form)
         return render_template('entry.html', exercises_in_selected_workout=exercise_list,
                                workout_name=workout_list_box_result, workout_date=workout_date,
-                               number_of_exercises=number_of_exercises)
+                               number_of_exercises=number_of_exercises, current_date=current_date)
     if request.form.get("button", False) == "Edit Routine":
         workout_list_box_result = request.form.get('Workout_ListBox')
         db.session.query(Routines).filter(Routines.user_id == current_user.id).delete()

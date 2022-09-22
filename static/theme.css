@@ -23881,6 +23881,22 @@ button.swiper-pagination-bullet {
   opacity: 0;
 }
 
+.dashboard-card-middle {
+  position: absolute;
+  left: 200px;
+}
+
+.absolute{
+  position: absolute;
+}
+
+.dashboard-card-triple-col {
+  padding-bottom: 40px;
+}
+
+.light-blue-opac {
+  background-color: rgba(141,211,199, 0.5)
+}
 /*# sourceMappingURL=dashboard-free.css.map */
 
 #workout-counter{

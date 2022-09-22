@@ -6,7 +6,7 @@
             <h1 class="routine-name-header center-header-title">{{ workout_name }}</h1>
             <form action="{{ url_for('completed_exercises', routine_name=workout_name) }}" method="POST">
                 <label for="date">Date</label>
-                <input type="date" id="date" name="workout_date" class="date-box" required>
+                <input type="date" id="date" name="workout_date" class="date-box" max="{{ current_date }}" required>
 
             {% for exercise in exercises_in_selected_workout: %}
                 <h3 class="individual-exercise-name">{{ exercise }}</h3>
