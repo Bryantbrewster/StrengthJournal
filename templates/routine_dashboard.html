@@ -149,12 +149,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-
-                                <td>test_exercise_name</td>
-                                <td>135</td>
-                                <td>Date XYZ</td>
-                            </tr>
+                            {% for exercise in personal_records_results: %}
+                                <tr>
+                                    <td>{{ exercise[1] }}</td>
+                                    <td>{{ exercise[2] }}</td>
+                                    <td>{{ exercise[3] }}</td>
+                                </tr>
+                            {% endfor %}
 <!--                            <tr>-->
 
 <!--                                <td>Jacob</td>-->

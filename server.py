@@ -247,6 +247,38 @@ def routine_dashboard():
     routine = request.args.get('routine')
     print(f"selected routine is {routine}")
 
+    routine_exercise_count = f'''SELECT count(distinct exercise) FROM exercises WHERE
+    USER_ID={current_user.id} AND DATE != 0 AND workout="{routine}";'''
+    number_of_exercises_in_routine = engine.execute(routine_exercise_count).all()
+    routine_exercise_count = number_of_exercises_in_routine[0][0]
+
+
+
+
+    personal_records_sql = f'''SELECT e1.exercise_id, e1.exercise, e1.weight, e1.date from exercises as e1
+    LEFT JOIN exercises as e2 ON e1.exercise = e2.exercise AND e1.weight < e2.weight 
+    WHERE e2.weight IS NULL AND e1.weight IS NOT NULL AND e1.DATE != 0 AND e1.USER_ID={current_user.id} AND e1.workout="{routine}"
+    GROUP BY e1.exercise;'''
+    # personal_records_sql = f'''SELECT * FROM exercises WHERE USER_ID={current_user.id} AND DATE != 0 AND
+    # workout = '{routine}';'''
+    personal_records_results = engine.execute(personal_records_sql).all()
+    print(personal_records_results)
+    # test_dict = dict(personal_records_results)
+    # print(test_dict)
+    # personal_record_dict = {}
+    # for i in personal_records_results:
+    #     personal_record_dict.update(
+    #         i[0] = {'record weight': i[1],
+    #                 'record date': i[2]})
+    # print(personal_record_dict)
+
+
+
+    # three_card_dict = {'unique_days_last_30': unique_days_last_30,
+    #                'unique_routines_last_30': unique_routines_last_30,
+    #                'favorite_routine_last_30': favorite_routine_last_30}
+
+
     # all_records = Exercises.query.filter(Exercises.user_id == current_user.id).all()
     all_records = Exercises.query.filter(Exercises.user_id == current_user.id, Exercises.date != 0).all()
     user_workout_log = db.session.query(Exercises.workout.distinct()).filter(Exercises.user_id == current_user.id).all()
@@ -255,7 +287,8 @@ def routine_dashboard():
     # exercises_schema = ExercisesSchema(many=True)
     # output = exercises_schema.dump(all_records)
     # return jsonify({'exercises': output})
-    return render_template('routine_dashboard.html', user_routines=user_routines)
+    return render_template('routine_dashboard.html', user_routines=user_routines,
+                           personal_records_results=personal_records_results)
 
 @app.route('/choose-a-workout')
 @login_required
@@ -329,10 +362,10 @@ def add_to_workout():
         return redirect(url_for('workout_choice'))
 
 
-@app.route('/enter-your-stats', methods=['GET', 'POST'])
-@login_required
-def print_test(action):
-    print()
+# @app.route('/enter-your-stats', methods=['GET', 'POST'])
+# @login_required
+# def print_test(action):
+#     print()
 
 
 
