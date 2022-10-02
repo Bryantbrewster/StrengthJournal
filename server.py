@@ -241,9 +241,12 @@ def dashboard():
     return render_template('dashboard.html', user_routines=user_routines, pie_chart_dict=pie_chart_dict,
                            three_card_dict=three_card_dict)
 
-@app.route('/routine-dashboard')
+@app.route('/routine-dashboard', methods=['GET'])
 @login_required
 def routine_dashboard():
+    routine = request.args.get('routine')
+    print(f"selected routine is {routine}")
+
     # all_records = Exercises.query.filter(Exercises.user_id == current_user.id).all()
     all_records = Exercises.query.filter(Exercises.user_id == current_user.id, Exercises.date != 0).all()
     user_workout_log = db.session.query(Exercises.workout.distinct()).filter(Exercises.user_id == current_user.id).all()
