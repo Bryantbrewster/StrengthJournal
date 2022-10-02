@@ -353,6 +353,9 @@ def add_to_workout():
         #     workout_day_names.append(i[0])
         # return render_template("workout.html", workout_list=workout_day_names)
         return redirect(url_for('workout_choice'))
+    # if request.args.get("source") == 'routine_edit':
+    #     print('yep made it here')
+    #     return redirect(url_for('workout_choice'))
     else:
         # full_workout_log = db.session.query(Exercises.workout.distinct()).all()
         # workout_day_names = []
@@ -361,11 +364,6 @@ def add_to_workout():
         # return render_template("workout.html", workout_list=workout_day_names)
         return redirect(url_for('workout_choice'))
 
-
-# @app.route('/enter-your-stats', methods=['GET', 'POST'])
-# @login_required
-# def print_test(action):
-#     print()
 
 
 
@@ -462,6 +460,39 @@ def new_routine():
         db.session.commit()
         return render_template('add_workout.html')
 
+@app.route("/edit-routine", methods=['GET', 'POST'])
+@login_required
+def add_exercise_to_routine():
+    # if request.form.get("source", False) == "routine_edit":
+    #     return redirect(url_for('save_routine_edits', source='routine_edit'))
+    if request.method == "POST":
+        new_routine = Routines(
+            user_id=current_user.id,
+            workout=request.form["Exercise_Name"]
+        )
+        db.session.add(new_routine)
+        db.session.commit()
+        exercise_list = []
+        exercise_tuples = db.session.query(Routines.workout.distinct()).filter(Routines.user_id == current_user.id).all()
+        for i in exercise_tuples:
+            exercise_list.append(i[0])
+        routine_name = request.args.get('routine_name')
+        return render_template('edit_routine.html', exercise_list=exercise_list, routine_name=routine_name)
+    else:
+        # db.session.query(Routines).filter(Routines.user_id == current_user.id).delete()
+        # db.session.commit()
+        return render_template('index.html')
+
+        # print("'else' on add_exercise_to_routine")
+        # routine_name = request.args.get('routine_name')
+        # exercise_name = request.args.get('exercise_name')
+        # return redirect(url_for('delete_from_routine', exercise_name=exercise_name, routine_name=routine_name))
+        # return render_template('index.html')
+    #     db.session.query(Routines).filter(Routines.user_id == current_user.id).delete()
+    #     db.session.commit()
+    #     return render_template('add_workout.html')
+
+
 
 @app.route("/new_routine", methods=['GET', 'POST'])
 @login_required
@@ -539,9 +570,10 @@ def delete_during_creation():
 #         db.session.commit()
 #     return render_template('add_workout.html', exercise_list=exercise_list)
 
-@app.route("/edit-routine")
+@app.route("/delete-from-routine")
 @login_required
 def delete_from_routine():
+    print('made it to delete from routine')
     exercise_name = request.args.get('exercise_name')
     print(exercise_name)
     routine_name = request.args.get('routine_name')
@@ -584,9 +616,18 @@ def save_routine_edits():
                 db.session.delete(row)
             else:
                 pass
-        db.session.commit()
-            # MAKE SURE THAT IT WORKS WITH A NEW NAME TOO, ALSO DELETING ZERO EXERCISES AND IT STILL WORKING, etc.
-    return render_template('index.html')
+    for exercise in exercise_keep_list:
+        new_workout = Exercises(
+            date=0,
+            user_id=current_user.id,
+            workout=new_routine_name,
+            exercise=exercise
+        )
+        db.session.add(new_workout)
+
+    db.session.commit()
+    # MAKE SURE THAT IT WORKS WITH A NEW NAME TOO, ALSO DELETING ZERO EXERCISES AND IT STILL WORKING, etc.
+    return redirect(url_for('workout_choice'))
 
 
 
