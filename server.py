@@ -294,7 +294,8 @@ def routine_dashboard():
     # output = exercises_schema.dump(all_records)
     # return jsonify({'exercises': output})
     return render_template('routine_dashboard.html', user_routines=user_routines,
-                           personal_records_results=personal_records_results, routine_exercises=routine_exercises)
+                           personal_records_results=personal_records_results, routine_exercises=routine_exercises,
+                           selected_routine=routine)
 
 @app.route('/choose-a-workout')
 @login_required
