@@ -86,10 +86,21 @@
                                     (+32%) more in 2021
                                 </p>
                             </div>
-                            <select class="form-select form-select-sm ms-auto w-20 font-weight-bolder bg-gray-100" aria-label=".form-select-sm example">
-                                <option selected="">Exercise 1</option>
-                                <option value="2020">Exercise 2</option>
-                            </select>
+                                <button class="form-select form-select-sm ms-auto w-20 font-weight-bolder bg-gray-100
+                                text-start"
+                                        aria-label=".form-select-sm example" type="button" id="routine_exercises"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Overview
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="routine_exercises">
+<!--                                        <li><a class="dropdown-item" href="{{ url_for('dashboard') }}">Overview</a></li>-->
+                                    {% for exercise in routine_exercises: %}
+                                        <li><a class="dropdown-item" href="{{ url_for('routine_dashboard', routine=routine) }}">{{ exercise }}</a></li>
+                                    {% endfor %}
+                                </ul>
+    <!--                                <option selected="">Exercise 1</option>-->
+    <!--                                <option value="2020">Exercise 2</option>-->
+    <!--                            </select>-->
                         </div>
                         <div class="card-body p-3">
                             <div class="chart">

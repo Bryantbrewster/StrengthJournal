@@ -278,6 +278,12 @@ def routine_dashboard():
     #                'unique_routines_last_30': unique_routines_last_30,
     #                'favorite_routine_last_30': favorite_routine_last_30}
 
+    exercise_list_sql = f'''SELECT distinct(exercise) FROM exercises WHERE
+    USER_ID={current_user.id} AND DATE != 0 AND workout="{routine}"'''
+    exercise_list_results = engine.execute(exercise_list_sql).all()
+    routine_exercises = [workout for workout, in exercise_list_results]
+
+
 
     # all_records = Exercises.query.filter(Exercises.user_id == current_user.id).all()
     all_records = Exercises.query.filter(Exercises.user_id == current_user.id, Exercises.date != 0).all()
@@ -288,7 +294,7 @@ def routine_dashboard():
     # output = exercises_schema.dump(all_records)
     # return jsonify({'exercises': output})
     return render_template('routine_dashboard.html', user_routines=user_routines,
-                           personal_records_results=personal_records_results)
+                           personal_records_results=personal_records_results, routine_exercises=routine_exercises)
 
 @app.route('/choose-a-workout')
 @login_required
