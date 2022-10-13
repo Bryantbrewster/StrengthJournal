@@ -247,6 +247,14 @@
     <script src="https://rawcdn.githack.com/Loopple/loopple-public-assets/f5029eba0dafd952ecdbf8fbbdd0aa9ae0d0abc1/asteria-dashboard/js/plugins/swiper.min.js"></script>
     <script src="https://loopple.s3.eu-west-3.amazonaws.com/asteria-dashboard/js/asteria-dashboard.min.js"></script>
     <script>
+        const exercise_names = {{ exercise_names|tojson|safe }};
+        const last_eight_routine_dates = {{ last_eight_routine_dates|tojson|safe }};
+
+        for (let i of exercise_names) {
+            console.log(i);
+        }
+
+
         document.addEventListener("DOMContentLoaded", function(event) {
 
         if(document.querySelector('.chart-pie')){
@@ -323,7 +331,7 @@
             new Chart(ctx2, {
                 type: "line",
                 data: {
-                  labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "test month", "Nov", "Dec"],
+                  labels: last_eight_routine_dates,
                   datasets: [{
                       label: "Black Friday",
                       tension: 0.4,
@@ -332,8 +340,9 @@
                       borderColor: "#00ab55",
                       borderWidth: 3,
                       backgroundColor: "transparent",
-                      data: [20, 60, 20, 50, 90, 220, 440, 380, 500],
-                      maxBarThickness: 6
+                      data: [20, 60, 20, 50, null, 220, 440, 380, 500],
+                      maxBarThickness: 6,
+                      spanGaps: false
                     },
                     {
                       label: "Autumn Sale",
@@ -373,7 +382,7 @@
                       ticks: {
                         suggestedMin: 0,
                         suggestedMax: 500,
-                        beginAtZero: true,
+                        beginAtZero: false,
                         padding: 10,
                         fontSize: 11,
                         fontColor: '#adb5bd',

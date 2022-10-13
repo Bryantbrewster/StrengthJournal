@@ -246,6 +246,16 @@ def dashboard():
 def routine_dashboard():
     routine = request.args.get('routine')
     print(f"selected routine is {routine}")
+    # chart_display = request.args.get('chart_display')
+
+    last_eight_dates_sql = f'''SELECT date FROM completed_routines WHERE USER_ID={current_user.id} AND DATE != 0 
+    AND workout="{routine}" ORDER BY date DESC LIMIT 8'''
+    last_eight_dates_result = engine.execute(last_eight_dates_sql).all()
+    last_eight_routine_dates = [date for date, in last_eight_dates_result]
+    last_eight_routine_dates.reverse()
+    print(last_eight_routine_dates)
+
+
 
     routine_exercise_count = f'''SELECT count(distinct exercise) FROM exercises WHERE
     USER_ID={current_user.id} AND DATE != 0 AND workout="{routine}";'''
@@ -262,7 +272,7 @@ def routine_dashboard():
     # personal_records_sql = f'''SELECT * FROM exercises WHERE USER_ID={current_user.id} AND DATE != 0 AND
     # workout = '{routine}';'''
     personal_records_results = engine.execute(personal_records_sql).all()
-    print(personal_records_results)
+    # print(personal_records_results)
     # test_dict = dict(personal_records_results)
     # print(test_dict)
     # personal_record_dict = {}
@@ -282,20 +292,43 @@ def routine_dashboard():
     USER_ID={current_user.id} AND DATE != 0 AND workout="{routine}"'''
     exercise_list_results = engine.execute(exercise_list_sql).all()
     routine_exercises = [workout for workout, in exercise_list_results]
-
+    print(routine_exercises)
 
 
     # all_records = Exercises.query.filter(Exercises.user_id == current_user.id).all()
     all_records = Exercises.query.filter(Exercises.user_id == current_user.id, Exercises.date != 0).all()
-    user_workout_log = db.session.query(Exercises.workout.distinct()).filter(Exercises.user_id == current_user.id).all()
+    user_workout_log = db.session.query(CompletedRoutines.workout.distinct()).filter(CompletedRoutines.user_id == current_user.id).all()
     user_routines = [workout for workout, in user_workout_log]
+
+    #this creates a nested list, with each sub-list containing all the weights of each exercise in this routine
+    test_routine_data = []
+
+    # for exercise in routine_exercises:
+    test_routine_dict = {"Names": [], "Weights": []}
+    names = []
+    weights = []
+    for exercise in routine_exercises:
+        test_sql = f'''select weight from exercises where USER_ID={current_user.id} AND DATE != 0 AND 
+        workout="{routine}" AND exercise="{exercise}" ORDER BY date DESC, exercise_id DESC LIMIT 8'''
+        test_results = engine.execute(test_sql).all()
+        test_results = [weight for weight, in test_results]
+        test_results.reverse()
+        names.append(exercise)
+        weights.append(test_results)
+
+    print(names)
+    print(weights)
+    # for i in test_routine_dict:
+    #     print(test_routine_dict["Weights"][0])
+    # print(test_routine_dict[0])
 
     # exercises_schema = ExercisesSchema(many=True)
     # output = exercises_schema.dump(all_records)
     # return jsonify({'exercises': output})
     return render_template('routine_dashboard.html', user_routines=user_routines,
                            personal_records_results=personal_records_results, routine_exercises=routine_exercises,
-                           selected_routine=routine)
+                           selected_routine=routine, exercise_names=names, exercise_weights=weights,
+                           last_eight_routine_dates=last_eight_routine_dates)
 
 @app.route('/choose-a-workout')
 @login_required

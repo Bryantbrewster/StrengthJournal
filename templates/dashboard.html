@@ -480,7 +480,7 @@
             myVar = myFunc({{ pie_chart_dict | tojson }});
     </script>
     <script>
-        const recent_routine_names = {{pie_chart_dict | tojson }};
+        const recent_routine_names = {{pie_chart_dict|tojson|safe}};
 
 
 
