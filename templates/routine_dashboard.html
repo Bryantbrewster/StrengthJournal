@@ -88,14 +88,14 @@
                             </div>
                                 <button class="form-select form-select-sm ms-auto w-20 font-weight-bolder bg-gray-100
                                 text-start"
-                                        aria-label=".form-select-sm example" type="button" id="routine_exercises"
+                                        aria-label=".form-select-sm example" type="button" id="full_exercise_list"
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     Overview
                                 </button>
-                                <ul class="dropdown-menu" aria-labelledby="routine_exercises">
+                                <ul class="dropdown-menu" aria-labelledby="full_exercise_list">
 <!--                                        <li><a class="dropdown-item" href="{{ url_for('dashboard') }}">Overview</a></li>-->
-                                    {% for exercise in routine_exercises: %}
-                                        <li><a class="dropdown-item" href="{{ url_for('routine_dashboard', routine=selected_routine) }}">{{ exercise }}</a></li>
+                                    {% for exercise in full_exercise_list: %}
+                                        <li><a class="dropdown-item" href="{{ url_for('routine_dashboard', routine=selected_routine, specific_exercise=exercise) }}">{{ exercise }}</a></li>
                                     {% endfor %}
                                 </ul>
     <!--                                <option selected="">Exercise 1</option>-->
@@ -144,7 +144,7 @@
                                         <div class=""></div>
                                     </div>
                                 </div>
-                                <canvas class="chart-line chartjs-render-monitor" height="300" style="display: block; width: 623px; height: 300px;" width="623"></canvas>
+                                <canvas id="myChart" class="chart-line chartjs-render-monitor" height="300" style="display: block; width: 623px; height: 300px;" width="623"></canvas>
                             </div>
                         </div>
                     </div>
@@ -247,12 +247,125 @@
     <script src="https://rawcdn.githack.com/Loopple/loopple-public-assets/f5029eba0dafd952ecdbf8fbbdd0aa9ae0d0abc1/asteria-dashboard/js/plugins/swiper.min.js"></script>
     <script src="https://loopple.s3.eu-west-3.amazonaws.com/asteria-dashboard/js/asteria-dashboard.min.js"></script>
     <script>
-        const exercise_names = {{ exercise_names|tojson|safe }};
         const last_eight_routine_dates = {{ last_eight_routine_dates|tojson|safe }};
+        const routine_dict = {{ routine_dict|tojson|safe }};
 
-        for (let i of exercise_names) {
-            console.log(i);
+        var borderColors = [
+                'rgba(141,211,199, 0.5)',
+                'rgba(179,222,105, 0.5)',
+                'rgba(255,255,179, 0.5)',
+                'rgba(128,177,211, 0.5)',
+                'rgba(251,128,114, 0.5)',
+                'rgba(253,180,98, 0.5)',
+                'rgba(190,186,218, 0.5)',
+                'rgba(252,205,229, 0.5)',
+                'rgba(217,217,217, 0.5)',
+                'rgba(188,128,189, 0.5)',
+                'rgba(204,235,197, 0.5)',
+                'rgba(255,237,111, 0.5)',
+        ];
+
+
+
+        var ctx = document.getElementById("myChart");
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: last_eight_routine_dates,
+                datasets: [],
+            },
+            options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  legend: {
+                    display: true,
+                  },
+            tooltips: {
+                    enabled: true,
+                    mode: "index",
+                    intersect: false,
+                  },
+
+                scales: {
+                    yAxes: [{
+
+                        gridLines: {
+                        borderDash: [2],
+                        borderDashOffset: [2],
+                        color: '#dee2e6',
+                        zeroLineColor: '#dee2e6',
+                        zeroLineWidth: 1,
+                        zeroLineBorderDash: [2],
+                        drawBorder: false,
+                      },
+                        ticks: {
+                            suggestedMin: 0,
+                            suggestedMax: 250,
+                            beginAtZero: false,
+                            padding: 10,
+                            fontSize: 11,
+                            fontColor: '#adb5bd',
+                            lineHeight: 3,
+                            fontStyle: 'normal',
+                            fontFamily: "Public Sans",
+                            callback: function(value, index, values) {
+                                if (parseInt(value) >= 1000) {
+                                    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                } else {
+                                    return value;
+                                }
+                            }
+                        }
+                    }],
+                    xAxes: [{
+                      gridLines: {
+                        zeroLineColor: 'rgba(0,0,0,0)',
+                        display: false,
+                      },
+                      ticks: {
+                        padding: 10,
+                        fontSize: 11,
+                        fontColor: '#adb5bd',
+                        lineHeight: 3,
+                        fontStyle: 'normal',
+                        fontFamily: "Public Sans",
+                      },
+                    }, ],
+                }
+            }
+        });
+
+        var colorInt = 0;
+
+        for (exercise in routine_dict) {
+            var newDataset = {
+              label: exercise,
+              data: [],
+              borderColor:borderColors[colorInt],
+              tension: 0.4,
+              borderWidth: 0,
+              pointRadius: 0,
+              borderWidth: 3,
+              backgroundColor: "transparent",
+              maxBarThickness: 6,
+              spanGaps: true
+            };
+            colorInt += 1;
+
+
+
+            for (value in routine_dict[exercise]) {
+                newDataset.data.push(routine_dict[exercise][value]);
+            }
+
+            myChart.config.data.datasets.push(newDataset);
         }
+
+            myChart.update();
+
+
+
+
 
 
         document.addEventListener("DOMContentLoaded", function(event) {
@@ -325,13 +438,16 @@
           });
         }
 
+        /*
+
+
         if(document.querySelector('.chart-line')){
         var ctx2 = document.querySelectorAll(".chart-line");
           ctx2.forEach(function(ctx2) {
             new Chart(ctx2, {
                 type: "line",
                 data: {
-                  labels: last_eight_routine_dates,
+                  labels: last_eight_dates,
                   datasets: [{
                       label: "Black Friday",
                       tension: 0.4,
@@ -411,6 +527,7 @@
           });
 
         }
+        */
 
         if(document.querySelector(".chart-line-1")){
         var ctx1 = document.querySelectorAll('.chart-line-1');
