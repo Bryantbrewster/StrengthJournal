@@ -80,12 +80,12 @@
                 <div class="col-lg-6">
                     <div class="card mb-4">
                         <div class="card-header pb-0 d-flex align-items-center">
-                            <div>
-                                <h6 class="mb-1">Sales overview</h6>
-                                <p class="text-sm mb-0">
-                                    (+32%) more in 2021
-                                </p>
-                            </div>
+<!--                            <div>-->
+                                <h4 class="mb-1">{{ selected_routine  }}</h4>
+<!--                                <p class="text-sm mb-0">-->
+<!--                                    (+32%) more in 2021-->
+<!--                                </p>-->
+<!--                            </div>-->
                                 <button class="form-select form-select-sm ms-auto w-20 font-weight-bolder bg-gray-100
                                 text-start"
                                         aria-label=".form-select-sm example" type="button" id="full_exercise_list"
@@ -249,6 +249,8 @@
     <script>
         const last_eight_routine_dates = {{ last_eight_routine_dates|tojson|safe }};
         const routine_dict = {{ routine_dict|tojson|safe }};
+        var min_y_axis = {{ min_y_axis|tojson|safe }};
+        var max_y_axis = {{ max_y_axis|tojson|safe }};
 
         var borderColors = [
                 'rgba(141,211,199, 0.5)',
@@ -299,8 +301,8 @@
                         drawBorder: false,
                       },
                         ticks: {
-                            suggestedMin: 0,
-                            suggestedMax: 250,
+                            suggestedMin: min_y_axis,
+                            suggestedMax: max_y_axis,
                             beginAtZero: false,
                             padding: 10,
                             fontSize: 11,

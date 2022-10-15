@@ -320,6 +320,7 @@ def routine_dashboard():
             routine_dict.update({exercise: all_exercises_results})
         print(routine_dict)
 
+
     else:
         print('else')
         # get last 8 dates that the user completed that specific exercise
@@ -347,10 +348,21 @@ def routine_dashboard():
             all_exercises_results.reverse()
             if len(all_exercises_results) < date_count:
                 for i in range(8 - len(all_exercises_results)):
-                    all_exercises_results.insert(0, 'None')
+                    all_exercises_results.insert(0, None)
             routine_dict.update({exercise: all_exercises_results})
         print(routine_dict)
 
+    master_weight_list = []
+    for i in routine_dict.values():
+        master_weight_list = master_weight_list + i
+    filtered_master_weight_list = list(filter(None, master_weight_list))
+    filtered_master_weight_list = [weight for weight in filtered_master_weight_list if weight != 'None']
+    min_weight = min(filtered_master_weight_list)
+    max_weight = max(filtered_master_weight_list)
+
+    # calculate y-axis min/max
+    min_y_axis = min_weight * 0.5
+    max_y_axis = max_weight * 1.25
 
     # all_records = Exercises.query.filter(Exercises.user_id == current_user.id).all()
     all_records = Exercises.query.filter(Exercises.user_id == current_user.id, Exercises.date != 0).all()
@@ -374,8 +386,8 @@ def routine_dashboard():
     # return jsonify({'exercises': output})
     return render_template('routine_dashboard.html', user_routines=user_routines,
                            personal_records_results=personal_records_results, full_exercise_list=full_exercise_list,
-                           selected_routine=routine, routine_dict=routine_dict,
-                           last_eight_routine_dates=last_eight_routine_dates)
+                           selected_routine=routine, routine_dict=routine_dict, min_y_axis=min_y_axis,
+                           last_eight_routine_dates=last_eight_routine_dates, max_y_axis=max_y_axis)
 
 @app.route('/choose-a-workout')
 @login_required
