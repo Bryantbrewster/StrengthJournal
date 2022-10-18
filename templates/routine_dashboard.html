@@ -93,6 +93,7 @@
                                     Overview
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="full_exercise_list">
+                                    <li><a class="dropdown-item" href="{{ url_for('routine_dashboard', routine=selected_routine, specific_exercise=None) }}">Overview</a></li>
 <!--                                        <li><a class="dropdown-item" href="{{ url_for('dashboard') }}">Overview</a></li>-->
                                     {% for exercise in full_exercise_list: %}
                                         <li><a class="dropdown-item" href="{{ url_for('routine_dashboard', routine=selected_routine, specific_exercise=exercise) }}">{{ exercise }}</a></li>
@@ -249,6 +250,8 @@
     <script>
         const last_eight_routine_dates = {{ last_eight_routine_dates|tojson|safe }};
         const routine_dict = {{ routine_dict|tojson|safe }};
+
+
         var min_y_axis = {{ min_y_axis|tojson|safe }};
         var max_y_axis = {{ max_y_axis|tojson|safe }};
 
@@ -290,15 +293,18 @@
 
                 scales: {
                     yAxes: [{
-
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Weight'
+                              },
                         gridLines: {
-                        borderDash: [2],
-                        borderDashOffset: [2],
-                        color: '#dee2e6',
-                        zeroLineColor: '#dee2e6',
-                        zeroLineWidth: 1,
-                        zeroLineBorderDash: [2],
-                        drawBorder: false,
+                            borderDash: [2],
+                            borderDashOffset: [2],
+                            color: '#dee2e6',
+                            zeroLineColor: '#dee2e6',
+                            zeroLineWidth: 1,
+                            zeroLineBorderDash: [2],
+                            drawBorder: false,
                       },
                         ticks: {
                             suggestedMin: min_y_axis,
@@ -316,9 +322,41 @@
                                 } else {
                                     return value;
                                 }
-                            }
-                        }
-                    }],
+                            },
+                        },
+
+
+                    },
+                    {
+                        position: 'right',
+                        gridLines: {
+                            borderDash: [2],
+                            borderDashOffset: [2],
+                            color: '#dee2e6',
+                            zeroLineColor: '#dee2e6',
+                            zeroLineWidth: 1,
+                            zeroLineBorderDash: [2],
+                            drawBorder: false,
+                      },
+                        ticks: {
+                            suggestedMin: min_y_axis,
+                            suggestedMax: max_y_axis,
+                            beginAtZero: false,
+                            padding: 10,
+                            fontSize: 11,
+                            fontColor: '#adb5bd',
+                            lineHeight: 3,
+                            fontStyle: 'normal',
+                            fontFamily: "Public Sans",
+                            callback: function(value, index, values) {
+                                if (parseInt(value) >= 1000) {
+                                    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                } else {
+                                    return value;
+                                }
+                            },
+                          }
+                        }],
                     xAxes: [{
                       gridLines: {
                         zeroLineColor: 'rgba(0,0,0,0)',
@@ -346,11 +384,12 @@
               borderColor:borderColors[colorInt],
               tension: 0.4,
               borderWidth: 0,
-              pointRadius: 0,
+              pointRadius: 2,
               borderWidth: 3,
               backgroundColor: "transparent",
               maxBarThickness: 6,
-              spanGaps: true
+              spanGaps: true,
+              lineTension: 0,
             };
             colorInt += 1;
 
