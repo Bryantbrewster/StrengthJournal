@@ -23897,8 +23897,21 @@ button.swiper-pagination-bullet {
 .light-blue-opac {
   background-color: rgba(141,211,199, 0.5)
 }
+
+.side-margins {
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+
+
 /*# sourceMappingURL=dashboard-free.css.map */
 
 #workout-counter{
     margin-top: 25px;
 }
+
+#pr-table {
+    width: 50%
+}
+
