@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
 
+
     <div class="row justify-content-center text-center center-header-title">
+
         <div class="col-md-6">
+            <h1>Select a Routine</h1>
             {% if workout_list: %}
             <form action="{{ url_for('add_to_workout') }}" method="POST">
 <!--                <label for="date">Date</label>-->
@@ -19,10 +22,17 @@
                 </select>
                 <br>
                 <br>
-                <input type="submit" name="button" value="Record a Workout" class="btn btn-dark btn-sm small-blk-btn">
-                <input type="submit" name="button" value="Edit Routine" class="btn btn-dark btn-sm small-blk-btn">
-                <input type="button" name="button" value="Delete Routine" class="btn btn-dark btn-sm small-blk-btn" data-toggle="modal" data-target="#confirm-submit">
-
+                <div class="row">
+                    <div class="col-sm-4">
+                        <input type="submit" name="button" value="Record a Workout" class="btn btn-dark btn-sm small-blk-btn">
+                    </div>
+                    <div class="col-sm-4">
+                        <input type="submit" name="button" value="Edit Routine" class="btn btn-dark btn-sm small-blk-btn">
+                    </div>
+                    <div class="col-sm-4">
+                        <input type="button" name="button" value="Delete Routine" class="btn btn-dark btn-sm small-blk-btn" data-toggle="modal" data-target="#confirm-submit">
+                    </div>
+                </div>
 
 <div class="modal" tabindex="-1" id="confirm-submit">
   <div class="modal-dialog">
@@ -36,8 +46,9 @@
 <!--      </div>-->
       <div class="modal-footer">
 
-            <input type="submit" value="Close" class="btn btn-dark btn-sm small-blk-btn" data-dismiss="modal">
             <input type="submit" name="button" value="Delete Routine" class="btn btn-dark btn-sm small-blk-btn">
+            <input type="submit" value="Close" class="btn btn-dark btn-sm small-blk-btn" data-dismiss="modal">
+
       </div>
     </div>
   </div>
@@ -64,7 +75,7 @@
 <!--</div>-->
 
                 <br>
-                <a href="{{ url_for('new_routine') }}" class="btn btn-dark btn-sm choose-workout-page-btn green-button">Add new custom workout routine</a>
+                <a href="{{ url_for('new_routine') }}" class="btn btn-dark btn-sm small-blk-btn">Create new workout routine</a>
         {% else: %}
             <p>
                 You don't have any workouts logged!

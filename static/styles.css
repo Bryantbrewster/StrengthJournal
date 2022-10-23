@@ -12,7 +12,9 @@ html {
 
 body {
     background-color: transparent;
+    color: white
 }
+
 
 
 /* body {
@@ -52,6 +54,7 @@ input {
 	-o-transition: box-shadow .5s ease;
 	-ms-transition: box-shadow .5s ease;
 	transition: box-shadow .5s ease;
+	color: white;
 
 }
 
@@ -95,11 +98,19 @@ input:focus { box-shadow: inset 0 -5px 45px rgba(100,100,100,0.4), 0 1px 1px rgb
 	margin: -150px 0 0 -150px;
 	width:300px;
 	height:300px;
+}
+
+.box-lg {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin: -150px 0 0 -150px;
+	width:300px;
+	height:300px;
+}
 
 
-
-
-.center-header-title{
+.center-header-title {
     margin: 125px 0px 0px;
 }
 
@@ -189,4 +200,22 @@ input:focus { box-shadow: inset 0 -5px 45px rgba(100,100,100,0.4), 0 1px 1px rgb
 
 .grad1 {
     background-image: linear-gradient(to bottom right, #0D324D, #7F5A83);
+}
+
+.transparent-list {
+    background: transparent;
+    border-color: white;
+}
+
+.small-btm-margin {
+    margin-bottom: 3%;
+}
+
+.min-width-btn {
+    min-width: 7rem;
+}
+
+.top-btm-margins {
+    margin-top: 2%;
+    margin-bottom: 2%;
 }
