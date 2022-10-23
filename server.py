@@ -606,7 +606,7 @@ def submit_new_routine():
         return redirect(url_for('new_routine'))
 
 
-    if Exercises.query.filter_by(workout=new_routine_name).first():
+    if Exercises.query.filter_by(user_id=current_user.id, workout=new_routine_name).first():
         print("duplicate name")
         flash("You already have a routine with that name, try adding a different routine!")
         exercise_list = []
