@@ -1,7 +1,19 @@
-body {
-background: rgb(128,208,199);
-background: linear-gradient(261deg, rgba(128,208,199,1) 0%, rgba(0,147,233,1) 100%);
+html {
+  background: linear-gradient(to bottom right, #0D324D, #7F5A83);
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  min-height: 100vh;
 }
+
+
+
+
+body {
+    background-color: transparent;
+}
+
 
 /* body {
 	width: 100%;
@@ -30,7 +42,7 @@ input {
 	outline: none;
 	padding: 10px;
 	font-size: 13px;
-	color: #fff;
+	/* color: #fff; */
 	text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
 	border: 1px solid rgba(0,0,0,0.3);
 	border-radius: 4px;
@@ -69,7 +81,13 @@ input:focus { box-shadow: inset 0 -5px 45px rgba(100,100,100,0.4), 0 1px 1px rgb
     padding: 2%;
 }
 
-.box h1 { color: #fff; text-shadow: 0 0 10px rgba(0,0,0,0.3); letter-spacing:1px; text-align:center; }
+.box h1 {
+    /* color: #fff; */
+    text-shadow: 0 0 10px rgba(0,0,0,0.3);
+    letter-spacing:1px;
+    text-align:center;
+}
+
 .box {
 	position: absolute;
 	top: 50%;
@@ -169,3 +187,6 @@ input:focus { box-shadow: inset 0 -5px 45px rgba(100,100,100,0.4), 0 1px 1px rgb
     margin-bottom: 3%;
 }
 
+.grad1 {
+    background-image: linear-gradient(to bottom right, #0D324D, #7F5A83);
+}
