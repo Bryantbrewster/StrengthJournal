@@ -49,7 +49,7 @@
                 <div class="col-lg-12">
                     <div class="dropdown">
                         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Routine Filter
+                            Filter Routine
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 <li><a class="dropdown-item" href="{{ url_for('dashboard') }}">Overview</a></li>
@@ -257,14 +257,14 @@
         var max_y_axis = {{ max_y_axis|tojson|safe }};
 
         var borderColors = [
-                'rgba(141,211,199, 0.5)',
-                'rgba(179,222,105, 0.5)',
-                'rgba(255,255,179, 0.5)',
-                'rgba(128,177,211, 0.5)',
-                'rgba(251,128,114, 0.5)',
-                'rgba(253,180,98, 0.5)',
-                'rgba(190,186,218, 0.5)',
-                'rgba(252,205,229, 0.5)',
+                '#ff7c43',
+                '#003f5c',
+                '#f95d6a',
+                '#a05195',
+                '#d45087',
+                '#665191',
+                '#2f4b7c',
+                '#ffa600',
                 'rgba(217,217,217, 0.5)',
                 'rgba(188,128,189, 0.5)',
                 'rgba(204,235,197, 0.5)',
