@@ -275,6 +275,7 @@
 
         var ctx = document.getElementById("myChart");
         var myChart = new Chart(ctx, {
+            backgroundColor: "red",
             type: 'line',
             data: {
                 fontStyle: "bold",
@@ -389,10 +390,10 @@
               borderWidth: 0,
               pointRadius: 2,
               borderWidth: 3,
-              backgroundColor: "transparent",
               maxBarThickness: 6,
               spanGaps: true,
               lineTension: 0,
+              fill: false,
             };
             colorInt += 1;
 
