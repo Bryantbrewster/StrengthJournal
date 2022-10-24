@@ -104,7 +104,7 @@ db.create_all()
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('index2.html')
 
 
 @app.route('/create-account', methods=["GET", "POST"])
