@@ -7,6 +7,10 @@
 	License: pixelarity.com/license
 */
 
+.spotlight-img {
+    padding: 2rem;
+}
+
 .navbar-dark {
     color: blue;
 }
