@@ -2923,7 +2923,7 @@ input, select, textarea {
 	.inner {
 		margin: 0 auto;
 		max-width: calc(100% - 6rem);
-		width: 80rem;
+		width: 70rem;
 	}
 
 		@media screen and (max-width: 1680px) {

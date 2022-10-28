@@ -9,6 +9,11 @@ html {
 
 .orange-btn {
     background-color: #FF7F27;
+    color: white;
+}
+
+.sm-margin-top {
+    margin-top: 10px;
 }
 
 body, input, select, textarea, nav {

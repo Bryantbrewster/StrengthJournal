@@ -267,6 +267,7 @@ def routine_dashboard():
     # personal_records_sql = f'''SELECT * FROM exercises WHERE USER_ID={current_user.id} AND DATE != 0 AND
     # workout = '{routine}';'''
     personal_records_results = engine.execute(personal_records_sql).all()
+    print(f"personal records results: {personal_records_results}")
     # print(personal_records_results)
     # test_dict = dict(personal_records_results)
     # print(test_dict)

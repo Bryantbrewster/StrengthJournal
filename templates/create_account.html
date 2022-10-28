@@ -3,7 +3,7 @@
 
 
 <div class="box">
-	<h1>Register</h1>
+	<h1 style="margin-bottom: 20px;">Register</h1>
 
     {% with messages = get_flashed_messages() %}
       {% if messages %}
@@ -21,7 +21,7 @@
 		<input type="email" name="email" placeholder="Email" required="required" />
         <input type="password" name="password1" placeholder="Password" required="required" />
         <input type="password" name="password2" placeholder="Confirm Password" required="required" />
-        <button type="submit" class="btn btn-primary btn-block btn-large">Create Account</button>
+        <button type="submit" class="btn orange-btn btn-block btn-large sm-margin-top">Create Account</button>
     </form>
 </div>
 

@@ -9,6 +9,7 @@
 
  .orange-btn {
     background-color: #FF7F27;
+    color: white;
 }
 
 :root {
@@ -3239,6 +3240,12 @@ fieldset:disabled .btn {
   color: #000;
   background-color: var(--bs-primary);
   border-color: var(--bs-primary);
+}
+
+.btn-primary-login {
+  color: white;
+  background-color: var(--bs-primary);
+
 }
 
 .btn-primary:hover {

@@ -36,9 +36,9 @@
 		  <a class="nav-item nav-link" href="{{ url_for('login') }}">Log In</a>
 		  <a class="nav-item nav-link" href="{{ url_for('create_account') }}">Create Account</a>
 			{% endif %}
+			{% if current_user.is_authenticated: %}
 		  <a class="nav-item nav-link" href="{{ url_for('workout_choice') }}">Record a Workout</a>
 			<a class="nav-item nav-link" href="{{ url_for('dashboard') }}">My Dashboard</a>
-			{% if current_user.is_authenticated: %}
 			<a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
 			{% endif %}
 		</div>
@@ -78,8 +78,8 @@
 										<img src="static/images/routine-creation.PNG" alt=""/>
 									</div>
 									<div class="content">
-										<h2>Create Custom Routines</h2>
-										<p></p>
+										<h2 style="color: #FF7F27;">Create Custom Routines</h2>
+										<p>Add your favorite workout routines to start logging workouts and document your progress.</p>
 <!--										<ul class="actions">-->
 <!--											<li><a href="#" class="button primary">Learn More</a></li>-->
 <!--										</ul>-->
@@ -90,8 +90,8 @@
 										<img src="static/images/exercise-submit.PNG" alt="" />
 									</div>
 									<div class="content">
-										<h2>Record Your Workouts</h2>
-										<p>Ut convallis, sem sit amet interdum consectetuer, odio augue aliquam leo, nec tortor nibh sed augue. Integer eu magna sit amet metus ferment. Pellentesque a diam sit amet mi ullamcorper vehicula. Lorem ipsum dolor sit amet nullam.</p>
+										<h2 style="color: #FF7F27;">Log Your Workouts</h2>
+										<p>Record completed workouts and stats to add them to your personal dashboards. </p>
 <!--										<ul class="actions">-->
 <!--											<li><a href="#" class="button primary">Learn More</a></li>-->
 <!--										</ul>-->
@@ -102,8 +102,8 @@
 										<img src="static/images/dashboard-graphs.PNG" alt="" />
 									</div>
 									<div class="content">
-										<h2>See Your Progress</h2>
-										<p>Ut convallis, sem sit amet interdum consectetuer, odio augue aliquam leo, nec tortor nibh sed augue. Integer eu magna sit amet metus ferment. Pellentesque a diam sit amet mi ullamcorper vehicula. Lorem ipsum dolor sit amet nullam.</p>
+										<h2 style="color: #FF7F27;">Visualize Your Progress</h2>
+										<p>Track your performance over time and watch yourself improve! Use the personalized dashboards to track your personal records, weights, favorite routines, and more.</p>
 <!--										<ul class="actions">-->
 <!--											<li><a href="#" class="button primary">Learn More</a></li>-->
 <!--										</ul>-->

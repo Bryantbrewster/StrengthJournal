@@ -3,7 +3,7 @@
 
 
 <div class="box">
-	<h1>Log In</h1>
+	<h1 style="margin-bottom: 20px;">Log In</h1>
 
     {% with messages = get_flashed_messages() %}
       {% if messages %}
@@ -18,7 +18,7 @@
     <form action="{{ url_for('login') }}" method="post">
 		<input type="email" name="email" placeholder="Email" required="required" />
         <input type="password" name="password" placeholder="Password" required="required" />
-        <button type="submit" class="btn btn-primary btn-block btn-large">Log In</button>
+        <button type="submit" class="btn orange-btn btn-block btn-large sm-margin-top">Log In</button>
     </form>
 </div>
 
