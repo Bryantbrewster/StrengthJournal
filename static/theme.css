@@ -23921,8 +23921,10 @@ button.swiper-pagination-bullet {
 }
 
 
-
-
+.nav-font {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
 
 /*# sourceMappingURL=dashboard-free.css.map */
 
