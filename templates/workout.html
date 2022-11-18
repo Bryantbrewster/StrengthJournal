@@ -7,7 +7,7 @@
         <div class="col-md-6">
 
             {% if workout_list: %}
-            <h1>Record a Workout</h1>
+            <h1 style="color:#FF7F27">Record a Workout</h1>
             <form action="{{ url_for('add_to_workout') }}" method="POST">
 <!--                <label for="date">Date</label>-->
 <!--                <input type="date" id="date" name="workout_date" required>-->
@@ -26,13 +26,13 @@
                 <br>
                 <div class="row">
                     <div class="col-sm-4">
-                        <input type="submit" name="button" value="Record a Workout" class="btn btn-dark btn-sm small-blk-btn">
+                        <input type="submit" name="button" value="Record a Workout" class="btn btn-dark btn-sm small-blk-btn orange-btn">
                     </div>
                     <div class="col-sm-4">
-                        <input type="submit" name="button" value="Edit Routine" class="btn btn-dark btn-sm small-blk-btn">
+                        <input type="submit" name="button" value="Edit Routine" class="btn btn-dark btn-sm small-blk-btn orange-btn">
                     </div>
                     <div class="col-sm-4">
-                        <input type="button" name="button" value="Delete Routine" class="btn btn-dark btn-sm small-blk-btn" data-toggle="modal" data-target="#confirm-submit">
+                        <input type="button" name="button" value="Delete Routine" class="btn btn-dark btn-sm small-blk-btn orange-btn" data-toggle="modal" data-target="#confirm-submit">
                     </div>
                 </div>
 
