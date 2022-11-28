@@ -231,7 +231,14 @@ def dashboard():
     WHERE USER_ID={current_user.id} AND DATE >= DATETIME('now', '-30 day') AND DATE <= DATETIME('now') 
     GROUP BY workout ORDER BY count(workout) DESC LIMIT 1'''
     favorite_routine_results = engine.execute(favorite_routine_sql).all()
-    favorite_routine_last_30 = favorite_routine_results[0][0]
+    print(favorite_routine_results)
+    if favorite_routine_results:
+        print('there is something here')
+        favorite_routine_last_30 = favorite_routine_results[0][0]
+    else:
+        print('no workouts in the last 30 days')
+        favorite_routine_last_30 = "None"
+
 
     three_card_dict = {'unique_days_last_30': unique_days_last_30,
                    'unique_routines_last_30': unique_routines_last_30,
