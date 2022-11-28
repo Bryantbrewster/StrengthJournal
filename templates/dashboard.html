@@ -227,7 +227,11 @@
 <!--                                                    <span class="text-xs font-weight-bolder ms-1">+55%</span>-->
                                                 </div>
                                                 <h4 class="font-weight-bolder mb-0 text-lg">
-                                                    {{ three_card_dict['unique_days_last_30'] }} days
+                                                    {% if three_card_dict['unique_days_last_30'] > 1 %}
+                                                        {{ three_card_dict['unique_days_last_30'] }} Days
+                                                    {% else %}
+                                                        {{ three_card_dict['unique_days_last_30'] }} Day
+                                                    {% endif %}
                                                 </h4>
                                             </div>
                                         </div>
@@ -254,7 +258,11 @@
 <!--                                                    <span class="text-xs font-weight-bolder ms-1">+55%</span>-->
                                                 </div>
                                                 <h4 class="font-weight-bolder mb-0 text-lg">
-                                                    {{ three_card_dict['unique_routines_last_30'] }} Routines
+                                                    {% if three_card_dict['unique_routines_last_30'] > 1 %}
+                                                        {{ three_card_dict['unique_routines_last_30'] }} Routines
+                                                    {% else %}
+                                                        {{ three_card_dict['unique_routines_last_30'] }} Routine
+                                                    {% endif %}
                                                 </h4>
                                             </div>
                                         </div>

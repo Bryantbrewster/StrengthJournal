@@ -56,7 +56,7 @@ class User(UserMixin, db.Model):
 class Exercises(db.Model):
     exercise_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer)
-    date = db.Column(db.String(250), nullable=False)
+    date = db.Column(db.Date, nullable=False)
     workout = db.Column(db.String(250))
     exercise = db.Column(db.String(250))
     sets =  db.Column(db.Integer)
@@ -75,7 +75,7 @@ class Routines(db.Model):
 class CompletedRoutines(db.Model):
     routine_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer)
-    date = db.Column(db.String(250), nullable=False)
+    date = db.Column(db.Date, nullable=False)
     workout = db.Column(db.String(250))
 
 
@@ -192,7 +192,7 @@ def dashboard():
     # queries the exercises table and grabs rows that meet the criteria, placing the row objects into an iterable list
     # which is really just the filtered rows so the specific columns values can be called upon
     all_records = Exercises.query.filter(Exercises.user_id == current_user.id,
-                                         Exercises.date != 0).all()
+                                         str(Exercises.date) != 0).all()
 
     # exercises_schema = ExercisesSchema(many=True)
     # total_output = exercises_schema.dump(all_records)
@@ -200,7 +200,7 @@ def dashboard():
     # grabs all of the unique routine names for the user, and puts them in an iterable list
     # this method can be a template for others
     user_workout_log = db.session.query(Exercises.workout.distinct()).filter(Exercises.user_id == current_user.id,
-                                                                             Exercises.date != 0).all()
+                                                                             str(Exercises.date) != 0).all()
     user_routines = [workout for workout, in user_workout_log]
 
     # creates a query using raw SQL, assigns it to a variable. Executes the variables which returns single element
@@ -216,33 +216,33 @@ def dashboard():
 
     # unique number of days worked out in the user's last 30 days
     day_count_sql = f'''SELECT count(distinct date) FROM COMPLETED_ROUTINES WHERE USER_ID={current_user.id} 
-    AND DATE >= DATETIME('now', '-30 day') AND DATE <= DATETIME('now')'''
+    AND DATE::date >= (CURRENT_DATE - 30) AND DATE::date <= CURRENT_DATE'''
     day_count_results = engine.execute(day_count_sql).all()
     unique_days_last_30 = day_count_results[0][0]
 
     # unique number of routines the user did in the last 30 days
     routine_count_sql = f'''SELECT count(distinct workout) FROM COMPLETED_ROUTINES WHERE USER_ID={current_user.id} 
-    AND DATE >= DATETIME('now', '-30 day') AND DATE <= DATETIME('now')'''
+    AND DATE::date >= (CURRENT_DATE - 30) AND DATE::date <= CURRENT_DATE'''
     routine_count_results = engine.execute(routine_count_sql).all()
     unique_routines_last_30 = routine_count_results[0][0]
 
     # the most common routine done in the last 30 days
     favorite_routine_sql = f'''SELECT workout FROM COMPLETED_ROUTINES 
-    WHERE USER_ID={current_user.id} AND DATE >= DATETIME('now', '-30 day') AND DATE <= DATETIME('now') 
+    WHERE USER_ID={current_user.id} AND DATE::date >= (CURRENT_DATE - 30) AND DATE::date <= CURRENT_DATE 
     GROUP BY workout ORDER BY count(workout) DESC LIMIT 1'''
     favorite_routine_results = engine.execute(favorite_routine_sql).all()
     print(favorite_routine_results)
     if favorite_routine_results:
-        print('there is something here')
         favorite_routine_last_30 = favorite_routine_results[0][0]
     else:
-        print('no workouts in the last 30 days')
         favorite_routine_last_30 = "None"
 
 
     three_card_dict = {'unique_days_last_30': unique_days_last_30,
                    'unique_routines_last_30': unique_routines_last_30,
                    'favorite_routine_last_30': favorite_routine_last_30}
+
+    print(three_card_dict['unique_routines_last_30'])
 
     print(three_card_dict)
     return render_template('dashboard.html', user_routines=user_routines, pie_chart_dict=pie_chart_dict,
@@ -258,19 +258,22 @@ def routine_dashboard():
 
 
 
-
-    routine_exercise_count = f'''SELECT count(distinct exercise) FROM exercises WHERE
-    USER_ID={current_user.id} AND DATE != 0 AND workout="{routine}";'''
-    number_of_exercises_in_routine = engine.execute(routine_exercise_count).all()
-    routine_exercise_count = number_of_exercises_in_routine[0][0]
-
-
+    # was causing problems but looked unused so commented out
+    # routine_exercise_count = f'''SELECT count(distinct exercise) FROM exercises WHERE
+    # USER_ID={current_user.id} AND DATE::integer != 0 AND workout="{routine}";'''
+    # number_of_exercises_in_routine = engine.execute(routine_exercise_count).all()
+    # routine_exercise_count = number_of_exercises_in_routine[0][0]
 
 
-    personal_records_sql = f'''SELECT e1.exercise_id, e1.exercise, e1.weight, e1.date from exercises as e1
-    LEFT JOIN exercises as e2 ON e1.exercise = e2.exercise AND e1.weight < e2.weight 
-    WHERE e2.weight IS NULL AND e1.weight IS NOT NULL AND e1.DATE != 0 AND e1.USER_ID={current_user.id} AND e1.workout="{routine}"
-    GROUP BY e1.exercise;'''
+
+
+    # personal_records_sql = f'''SELECT e1.exercise from exercises as e1
+    # LEFT JOIN exercises as e2 ON e1.exercise = e2.exercise AND e1.weight < e2.weight
+    # WHERE e2.weight IS NULL AND e1.weight IS NOT NULL AND e1.DATE::varchar != 0::varchar AND e1.USER_ID={current_user.id} AND e1.workout='{routine}'
+    # GROUP BY e1.exercise;'''
+
+    personal_records_sql = f'''SELECT DISTINCT ON(exercise) exercise_id, exercise, weight, date from exercises where date != 0::varchar
+    ORDER BY exercise, weight DESC, date, exercise_id'''
     # personal_records_sql = f'''SELECT * FROM exercises WHERE USER_ID={current_user.id} AND DATE != 0 AND
     # workout = '{routine}';'''
     personal_records_results = engine.execute(personal_records_sql).all()
@@ -297,8 +300,8 @@ def routine_dashboard():
     if specific_exercise is None:
         print('if')
         # get last 8 dates that the user completed that routine
-        last_eight_dates_sql = f'''SELECT date FROM completed_routines WHERE USER_ID={current_user.id} AND DATE != 0 
-        AND workout="{routine}" ORDER BY date DESC LIMIT 8'''
+        last_eight_dates_sql = f'''SELECT date FROM completed_routines WHERE USER_ID={current_user.id} AND DATE != 0::varchar 
+        AND workout='{routine}' ORDER BY date DESC LIMIT 8'''
         last_eight_dates_result = engine.execute(last_eight_dates_sql).all()
         last_eight_routine_dates = [date for date, in last_eight_dates_result]
         last_eight_routine_dates.reverse()
@@ -307,7 +310,7 @@ def routine_dashboard():
 
         # gets exercise names for that routine
         display_exercises_sql = f'''SELECT distinct(exercise) FROM exercises WHERE
-        USER_ID={current_user.id} AND DATE != 0 AND workout="{routine}"'''
+        USER_ID={current_user.id} AND DATE != 0::varchar AND workout='{routine}' '''
         display_exercises_results = engine.execute(display_exercises_sql).all()
         display_exercises = [workout for workout, in display_exercises_results]
         print(display_exercises)
@@ -316,8 +319,8 @@ def routine_dashboard():
         routine_dict = {}
 
         for exercise in display_exercises:
-            all_exercises_sql = f'''select weight from exercises where USER_ID={current_user.id} AND DATE != 0 AND 
-            workout="{routine}" AND exercise="{exercise}" ORDER BY date DESC, exercise_id DESC 
+            all_exercises_sql = f'''select weight from exercises where USER_ID={current_user.id} AND DATE != 0::varchar AND 
+            workout='{routine}' AND exercise='{exercise}' ORDER BY date DESC, exercise_id DESC 
             LIMIT {date_count}'''
             all_exercises_results = engine.execute(all_exercises_sql).all()
             all_exercises_results = [weight for weight, in all_exercises_results]
@@ -373,14 +376,14 @@ def routine_dashboard():
     max_y_axis = max_weight * 1.25
 
     # all_records = Exercises.query.filter(Exercises.user_id == current_user.id).all()
-    all_records = Exercises.query.filter(Exercises.user_id == current_user.id, Exercises.date != 0).all()
+    all_records = Exercises.query.filter(Exercises.user_id == current_user.id, str(Exercises.date) != 0).all()
     user_workout_log = db.session.query(CompletedRoutines.workout.distinct()).filter(CompletedRoutines.user_id == current_user.id).all()
     user_routines = [workout for workout, in user_workout_log]
 
 
 
     full_exercise_list_sql = f'''SELECT distinct(exercise) FROM exercises WHERE
-    USER_ID={current_user.id} AND DATE != 0 AND workout="{routine}"'''
+    USER_ID={current_user.id} AND DATE != 0::varchar AND workout='{routine}' '''
     full_exercise_list_results = engine.execute(full_exercise_list_sql).all()
     full_exercise_list = [workout for workout, in full_exercise_list_results]
     print(full_exercise_list)
