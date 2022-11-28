@@ -21,9 +21,9 @@ app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'Zr4u7w!z%C*F-JaNdRgUkXp2s5v8y/A?'
 # create database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://uvxmloyuoxsorq:929aed8d2e33145cdae1376eadff76972f99d08d1d0d216116b77c0d980b13c7@ec2-3-219-19-205.compute-1.amazonaws.com:5432/d3no6o38ulcapk'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://uvxmloyuoxsorq:929aed8d2e33145cdae1376eadff76972f99d08d1d0d216116b77c0d980b13c7@ec2-3-219-19-205.compute-1.amazonaws.com:5432/d3no6o38ulcapk'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-engine = create_engine('postgres://uvxmloyuoxsorq:929aed8d2e33145cdae1376eadff76972f99d08d1d0d216116b77c0d980b13c7@ec2-3-219-19-205.compute-1.amazonaws.com:5432/d3no6o38ulcapk')
+engine = create_engine('postgresql://uvxmloyuoxsorq:929aed8d2e33145cdae1376eadff76972f99d08d1d0d216116b77c0d980b13c7@ec2-3-219-19-205.compute-1.amazonaws.com:5432/d3no6o38ulcapk')
 # initializes database
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
