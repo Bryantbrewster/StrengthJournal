@@ -16,9 +16,10 @@
 }
 
 .landing-page-logo {
-    width: 750px;
-    height: 750px;
+    max-width: 100%;
+    height: auto;
     position: absolute;
+    width: 750px;
 }
 
 .get-started {
@@ -1931,6 +1932,7 @@ input, select, textarea {
 		input[type="reset"]:after,
 		input[type="button"]:after,
 		button:after,
+		/*
 		.button:after {
 			-moz-transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, color 0.2s ease-in-out;
 			-webkit-transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, color 0.2s ease-in-out;
@@ -1945,6 +1947,7 @@ input, select, textarea {
 			right: 0;
 			text-align: center;
 			width: 2.5rem;
+			*/
 		}
 
 		input[type="submit"]:hover,
