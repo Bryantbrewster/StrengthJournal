@@ -272,7 +272,8 @@ def routine_dashboard():
     # WHERE e2.weight IS NULL AND e1.weight IS NOT NULL AND e1.DATE::varchar != 0::varchar AND e1.USER_ID={current_user.id} AND e1.workout='{routine}'
     # GROUP BY e1.exercise;'''
 
-    personal_records_sql = f'''SELECT DISTINCT ON(exercise) exercise_id, exercise, weight, date from exercises where date != 0::varchar
+    personal_records_sql = f'''SELECT DISTINCT ON(exercise) exercise_id, exercise, weight, date from exercises where USER_ID={current_user.id} 
+    AND date != 0::varchar
     ORDER BY exercise, weight DESC, date, exercise_id'''
     # personal_records_sql = f'''SELECT * FROM exercises WHERE USER_ID={current_user.id} AND DATE != 0 AND
     # workout = '{routine}';'''
