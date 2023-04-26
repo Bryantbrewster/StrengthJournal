@@ -273,7 +273,7 @@ def routine_dashboard():
     # GROUP BY e1.exercise;'''
 
     personal_records_sql = f'''SELECT DISTINCT ON(exercise) exercise_id, exercise, weight, reps, date from exercises where USER_ID={current_user.id}
-    AND date IS NOT NULL AND weight IS NOT NULL AND workout='{routine}'
+    AND date IS NOT NULL AND weight IS NOT NULL AND exercise IN (select exercise FROM exercises where workout='{routine}')
     ORDER BY exercise, weight DESC, reps DESC, date, exercise_id'''
     # personal_records_sql = f'''SELECT * FROM exercises WHERE USER_ID={current_user.id} AND DATE != 0 AND
     # workout = '{routine}';'''
@@ -733,7 +733,7 @@ def save_routine_edits():
                 pass
     for exercise in exercise_keep_list:
         new_workout = Exercises(
-            date=0,
+            date=None,
             user_id=current_user.id,
             workout=new_routine_name,
             exercise=exercise
