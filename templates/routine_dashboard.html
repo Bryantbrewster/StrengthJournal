@@ -250,7 +250,7 @@
     <script>
         const last_eight_routine_dates = {{ last_eight_routine_dates|tojson|safe }};
         const routine_dict = {{ routine_dict|tojson|safe }};
-
+        console.log(last_eight_routine_dates)
         Chart.defaults.global.defaultFontStyle = 'Bold'
 
         var min_y_axis = {{ min_y_axis|tojson|safe }};
