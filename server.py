@@ -9,7 +9,7 @@ from pprint import pprint
 from sqlalchemy.engine import result
 import json
 from collections import Counter
-
+import os
 
 
 #don't forget that flask_sqlalchemy and flask_login need to be installed through the terminal commands
@@ -20,10 +20,20 @@ app = Flask(__name__)
 
 
 app.config['SECRET_KEY'] = 'Zr4u7w!z%C*F-JaNdRgUkXp2s5v8y/A?'
+
+
 # create database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://kmbjlnnzylxtej:1dbba388fda2f5d9d583635ad07cc02ef1b5958d6601b313560ed04ddf18227f@ec2-54-165-90-230.compute-1.amazonaws.com:5432/d320u3ltibrqnf'
+# app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+# if app.config['SQLALCHEMY_DATABASE_URI'].startswith("postgres://"):
+#     app.config['SQLALCHEMY_DATABASE_URI'] = app.config['SQLALCHEMY_DATABASE_URI'].replace("postgres://", "postgresql://")
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://ub3741get1ebco:pe8e23b72f968aa019ef6e88f2784f8b4ea693b2491416cdc6dd7769a80c6004e@c958aoh997ojil.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/dfbn4g0tbm8dhj'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-engine = create_engine('postgresql://kmbjlnnzylxtej:1dbba388fda2f5d9d583635ad07cc02ef1b5958d6601b313560ed04ddf18227f@ec2-54-165-90-230.compute-1.amazonaws.com:5432/d320u3ltibrqnf')
+
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://kmbjlnnzylxtej:1dbba388fda2f5d9d583635ad07cc02ef1b5958d6601b313560ed04ddf18227f@ec2-54-165-90-230.compute-1.amazonaws.com:5432/d320u3ltibrqnf'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://ub3741get1ebco:pe8e23b72f968aa019ef6e88f2784f8b4ea693b2491416cdc6dd7769a80c6004e@c958aoh997ojil.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/dfbn4g0tbm8dhj'
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+# engine = create_engine('postgresql://kmbjlnnzylxtej:1dbba388fda2f5d9d583635ad07cc02ef1b5958d6601b313560ed04ddf18227f@ec2-54-165-90-230.compute-1.amazonaws.com:5432/d320u3ltibrqnf')
 # initializes database
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
