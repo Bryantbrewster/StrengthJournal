@@ -18,7 +18,8 @@ import os
 
 app = Flask(__name__)
 
-
+# flask Key
+# bad practice to have this exposed, I know, need to store as env variable
 app.config['SECRET_KEY'] = 'Zr4u7w!z%C*F-JaNdRgUkXp2s5v8y/A?'
 
 
