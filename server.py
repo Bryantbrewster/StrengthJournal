@@ -12,8 +12,6 @@ from collections import Counter
 import os
 
 
-#don't forget that flask_sqlalchemy and flask_login need to be installed through the terminal commands
-# same with flask-marshmallow and marshmallow-sqlalchemy
 
 
 app = Flask(__name__)
